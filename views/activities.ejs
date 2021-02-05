@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>UTSW TBI Care</title>
+    <meta charset="utf-8">
+    <%- include('partials/header.ejs') %>
+    <%- include('partials/table.ejs') %>
+    <style>
+    .mybutton {
+        background-color: Transparent;
+        background-repeat:no-repeat;
+        border: none;
+        cursor:pointer;
+        overflow: hidden;
+        outline:none;
+    }
+    </style>
+    <script src="/public/js/authentication.js"></script>
+
+    </head>
+<body>
+
+<%- include('partials/nav_dashboard.ejs') %>
+<%- include('partials/sidebar.ejs') %>
+
+
+<div id="content"  style="background-color:rgb(233, 231, 231);">
+  <div id="mytable" class="col-12 mx-5 form my-5" style="background-color:white;">
+<h1 class="font-family: 'Merriweather', serif;
+ text-center">View Prescription</h1>
+<hr>
+
+<!-- form start here -->
+<div class="table-responsive" style="zoom:70%">
+
+<table 
+    id="table"
+    style="position: relative; width:100%"
+    class="table table-striped"
+    data-toggle="table"
+    data-pagination="true"
+    data-search="true"
+    data-show-export="true"
+    data-search-align="left"
+    data-height="950"
+    data-show-toggle="true"
+    data-show-columns="true"
+    data-show-columns-toggle-all="true"
+    data-icon-size = "lg"
+    data-sort-class="table-active"
+    data-sortable="true"
+    data-show-footer="true"
+    data-detail-view="true"
+    data-click-to-select="true"
+    data-detail-formatter="detailFormatter"
+    data-minimum-count-columns="2"
+    data-page-list="[10, 25, 50, 100, all]"
+    data-pagination="true"
+    data-page-number="1"
+    >
+    <thead style="width: auto !important;" id = "mythead" class="black white-text thead-dark">
+        <tr>
+            <th style="width: 3%" data-field="edit">Edit</th>
+            <th style="width: 3%" data-field="ID">ID</th>
+            <th data-field="Patient" data-sortable = "true">Patient</th>
+            <th data-field="Start Date" data-sortable = "true">Start Date</th>
+            <th data-field="Title" data-sortable = "true">Title</th>
+            <th data-field="Text" data-sortable = "true">Text</th>
+            <th  data-field="Instructions" >Instructions</th>
+            <th data-field="Schedule" data-sortable = "true">Schedule</th>
+            <th data-field="Target Heart Rate" data-sortable = "true">Target Heart Rate</th>
+            <th data-field="Target Steps" data-sortable = "true">Target Steps</th>
+            <th class="col-sm-3" data-field="Target Distance" data-sortable = "true">Target Distance</th>
+            <th data-field="Target Time" data-sortable = "true">Target Time</th>
+            <th data-field="Target Active Burned Energy" data-sortable = "true">Target Active Burned Energy</th>
+            <th data-field="Summary" data-sortable = "true">Summary</th>
+            <th data-field="Created At" data-sortable = "true">Created At</th>
+            <th data-field="delete">Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        
+    </tbody>
+    <tfoot >
+      <tr>
+        <td>Edit</td>
+        <td>ID</td>
+        <td>Patient</td>
+        <td>Start Date</td>
+        <td>Title</td>
+        <td>Text</td>
+        <td>Instructions</td>
+        <td>Schedule</td>
+        <td>Target Heart Rate</td>
+        <td>Target Steps</td>
+        <td>Target Distance</td>
+        <td>Target Time</td>
+        <td>Target Active Burned Energy</td>
+        <td>Summary</td>
+        <td>Created At</td>
+        <td>Delete</td>
+      </tr>
+    </tfoot>
+</table>
+</div>
+
+<!-- colse side bar -->
+</div>
+<!-- give data to table -->
+
+<script>
+  var data =[];
+</script>
+<% for (var i = 0; i < activities.length; ++i) { %>
+    <script>
+        var obj = {};
+        obj["ID"] = '<%= activities[i].id %>';
+        obj["Patient"] = '<%= activities[i].patient_name %>';
+        obj["Start Date"] = '<%= activities[i].start_date %>';
+        obj["End Date"] = '<%= activities[i].end_date %>';
+        obj["Group ID"] = '<%= activities[i].group_id %>';
+        obj["Type"] = '<%= activities[i].type %>';
+        obj["Sub Type"] = '<%= activities[i].subtype %>';
+        obj["Workout Type"] = `<% if(activities[i].workout_type_apple_id) { %>
+                                  <span><b>Name:</b> <%= activities[i].workout_type_name %></span><br/>
+                                  <span><b>Category:</b> <%= activities[i].workout_type_category %></span><br/>
+                              <% } %>`;
+        obj["Location Type"] = '<%= activities[i].location_type %>';
+        obj["Title"] = '<%= activities[i].title %>';
+        obj["Text"] = '<%= activities[i].text %>';
+        obj["Instructions"] = '<%= activities[i].instructions %>';
+        obj["Image URL"] = '<a href = <%= activities[i].image_url %>"><%= activities[i].image_url %><a>';
+        obj["Color"] = '<span style=" color: black height:30px; width:400px; background-color:<%= activities[i].color %>"><%= activities[i].color %></span>';
+        obj["Result Resettable"] = '<%= activities[i].result_resettable %>';
+        obj["Schedule"] = ` <span><b>Type:</b> <%= activities[i].schedule.type %></span><br>
+                            <span><b>Frequency:</b> <%= activities[i].schedule.frequency %></span><br>
+                            <span><b>Skips:</b> <%= activities[i].schedule.skips %></span>`;
+        obj["Optional"] = '<%= activities[i].optional %>';
+        obj["Target Heart Rate"] = '<%= activities[i].target_heart_rate %>';
+        obj["Target Steps"] = '<%= activities[i].target_steps %>';
+        obj["Target Distance"] = '<%= activities[i].target_distance %>';
+        obj["Target Time"] = '<%= activities[i].target_time/60 %>';
+        obj["Target Active Burned Energy"] = '<%= activities[i].target_active_burned_energy %>';
+        obj["Summary"] = '<%= activities[i].summary %>';
+        obj["Created At"] = '<%= activities[i].created_at %>';
+        obj["delete"] = 
+        `<button class="mybutton" title="Delete" onclick="delete_activity(<%= activities[i].id %>)">
+          <i class="fas fa-trash-alt" style="color: #ab150a;"></i>
+         </button>`;
+        obj["edit"] = '<a title="Edit"  href="/website/activities/form?activity_id=<%= activities[i].id %>"><i class="fas fa-edit"></i></a>';
+        data.push(obj);
+    </script>
+<% } %>
+<script>
+
+var $table = $('#table');
+$table.bootstrapTable({data: data})
+
+
+// undefinedText
+$table.bootstrapTable({
+  undefinedText: 'N/A',
+  data: data
+})
+// detail Formatter
+function detailFormatter(index, row) {
+  var html = []
+  $.each(row, function (key, value) {
+    html.push('<p><b>' + key + ':</b> ' + value + '</p>')
+  })
+  var newarr = html.slice(0,-2);
+  return newarr.join('')
+}
+</script>
+
+<!-- DELETE DATA -->
+<script>
+  function delete_activity(activity_id) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.value) {
+          Swal.fire(
+            'Deleted!',
+            'Your file has been deleted.',
+            'success'
+          ).then(function () {
+            $("#div_spinner_" + activity_id).css('display', '');
+            $("#div_edit_" + activity_id).css('display', 'none');
+            $.ajax({
+                headers:{"x-csrf-token": "<%= locals.csrfToken %>" },
+                url: '/website/activities/delete',
+                type: 'POST',
+                dataType: 'text',
+                data: { activity_id: activity_id }
+            }).done(function (response) {
+                console.log(response);
+                location.reload();
+            }).fail(function (jqXHR, statusText, errorThrown) {
+                console.log('error');
+                var data = JSON.parse(jqXHR.responseText);
+                console.log(data);
+                $("#div_spinner_" + activity_id).css('display', 'none');
+                $("#div_edit_" + activity_id).css('display', '');
+                alert(data.error);
+            });
+        });
+      }
+    })
+  }
+</script>
+
+<% include('partials/tableFormatEnd.ejs') %>
+
+<%- include('partials/footer.ejs') %>
+</body>
+</html>

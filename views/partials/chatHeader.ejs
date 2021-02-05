@@ -1,0 +1,106 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <title>Chat</title>
+    <meta charset="utf-8"/>
+
+	<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> 
+
+
+    <script type="text/javascript" src="inverse-analytics.js"></script>
+    <link rel="manifest" href="./manifest.json">
+    <link type="text/css" rel="stylesheet" media="screen" href="https://cdn.conversejs.org/6.0.1/dist/converse.min.css" />
+	<script src="https://cdn.conversejs.org/3rdparty/libsignal-protocol.min.js"></script>
+	<script src="/public/js/converse.js"></script>
+<!-- 	<script src="https://cdn.conversejs.org/6.0.0/dist/converse.min.js"></script>
+ -->	<script src="https://code.jquery.com/jquery-3.3.1.min.js" ></script>
+
+    <style>
+    	/*profile*/
+		/* #conversejs .list-group-item.active {
+			display: none;
+		}
+		#conversejs .list-group-item:last-child{
+			display: none;
+		} */
+
+		/*chat icon*/
+		/* #conversejs .chatbox .sendXMPPMessage .chat-toolbar .disabled {
+			display: none;
+		} */
+/*		#conversejs #controlbox .controlbox-section .controlbox-heading__btn{
+			display:none;
+		}
+*/
+/*		#conversejs.converse-embedded #controlbox .brand-heading-container, #conversejs.converse-fullscreen #controlbox .brand-heading-container, #conversejs.converse-mobile #controlbox .brand-heading-container {
+			display:none;
+		}*/
+
+
+/*		your profile*/
+		/* #conversejs .nav-link {
+		    display: none;
+		}
+		#conversejs .chatbox .sendXMPPMessage .chat-toolbar li:hover{
+			display: none;
+		} */
+/*		info icon*/		
+		/* .fa-info-circle:before {
+    		display:none;
+		} */
+/*		lock message*/
+		/* .fa-unlock:before {
+		   display:none;
+		} */
+		/* LOGIN PAGE HIDE  */
+        /* #conversejs label{
+            display:none;
+
+        }
+        #conversejs form.converse-form input[type=text]{
+            display:none;
+
+        }
+        #conversejs form.converse-form input[type=password]{
+            display:none;
+        } */
+        #conversejs input[type=checkbox], #conversejs input[type=radio]{
+            display: none;
+        }
+        #conversejs.converse-fullscreen #controlbox #converse-login input[type=submit]{
+            display: none;
+
+        }
+        #conversejs.converse-fullscreen #controlbox .brand-heading-container{
+            display: none;
+        }
+
+
+		/* chat title  */
+		#conversejs .chat-head a:not([href]):not([tabindex]).chatbox-btn.fa{
+			display: none;
+		}
+		/* LOCK ICON */
+		.toggle-omemo.fa.fa-unlock::before{
+			display: none;
+
+		}
+		clearfix::after{
+			display: none;
+		}
+		.form-control.suggestion-box__input{
+			display:none;
+		}
+
+		.controlbox-heading__btn.show-client-info.fa.fa-info-circle.align-self-center::before{
+			display: none;
+		}
+		#converse-login-jid.form-control{
+			display: none;
+		}
+		#converse-login-password.form-control{
+			display: none;
+		}
+	</style>
+</head>
+<body class="converse-fullscreen">

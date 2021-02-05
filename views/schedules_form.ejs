@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>UTSW TBI Care</title>
+    <meta charset="utf-8">
+    <%- include('partials/header.ejs') %>
+    <script src="/public/js/authentication.js"></script>
+    </head>
+<body>
+
+<%- include('partials/nav_dashboard.ejs') %>
+<%- include('partials/sidebar.ejs') %>
+<%- include('partials/formFormatStart.ejs') %>
+
+
+<h1 class="font-family: 'Merriweather', serif;
+text-center"><%= title %></h1>
+<hr>
+<% if(locals.error) { %>
+    <h3><%= locals.error %></h3>
+    <% locals.error = null %>
+<% } %>
+<!-- form start here -->
+<form class="justify-content-center py-2" action="/website/schedules/form" method="POST" onsubmit="return check()" >
+    <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>" />
+    <input type="hidden" name="schedule_id" value="<%= locals.schedule ? locals.schedule.id : -1 %>">
+	<div class="form-group row">
+		<label for="startDate" class="col-3 col-form-label text-right">Start Date</label>
+		<input type="date" name="startDate" class="form-control col-3" value="<%= locals.schedule ? locals.schedule.start_date : '' %>" required/>
+		<label for="endDate" class="col-2 col-form-label text-right">End Date</label>
+		<input name="endDate" type="date" id="end_date" class="form-control col-3" value="<%= locals.schedule ? locals.schedule.end_date : '' %>" required/>
+		<div class="col-1 "></div>
+	</div>
+	<hr>
+	<div class="form-group row ">
+		<div class="col-2 "></div>
+		<label for="type"  class="col-2 col-form-label text-right pr-3">Type</label>
+		<select  name="type" type="text" id="showFrequency" class="form-control col-5 " placeholder="Type" id="selectType" required>
+			<option value="" disabled selected>Select Schedule Type</option>
+			<option value="Weekly" <%= locals.schedule && locals.schedule.type == 'weekly' ? 'selected' : '' %>>Weekly</option>
+			<option value="Daily" <%= locals.schedule && locals.schedule.type == 'daily' ? 'selected' : '' %>>Daily</option>
+		 </Select>
+		<div class="col-3 "></div>
+	</div>
+	<div id="Daily" class="hide" style="display: none">
+	<div class="form-group row">
+		<div class="col-2 "></div>
+		<label for="Dailyfrequency"  class="col-2 col-form-label text-right pr-3">Frequency</label>
+        <input name="Dailyfrequency" type="number" class="form-control col-3" placeholder="One number for Daily" required>
+		<div class="col-5 " min="0"></div>
+	</div>
+	</div>
+	<div id="Weekly" class="hide" style="display:none">
+		<div class="form-group row mb-0">
+			<label for="frequency"  class="col-3 col-form-label text-right pr-3">Frequency</label>				
+				<input name="Sun" class="form-control col-1 mr-2" type="number" placeholder="No." min="0" required />
+				<input name="Mon" class="form-control col-1 mr-2" type="number" placeholder="No." min="0" required />
+				<input name="Tues" class="form-control col-1 mr-2" type="number" placeholder="No." min="0" required />
+				<input name="Wed" class="form-control col-1 mr-2" type="number" placeholder="No." min="0" required />
+				<input name="Thurs" class="form-control col-1 mr-2" type="number" placeholder="No." min="0" required />
+				<input name="Fri" class="form-control col-1 mr-2" type="number" placeholder="No." min="0" required />
+				<input name="Sat" class="form-control col-1 mr-2" type="number" placeholder="No." min="0" required />
+				<div class="col-2"></div>
+		  </div>
+		  <div class="form-group row">
+			<div class="col-3"></div>
+			<label for="Sun" class=" col-1 mr-2 text-left" type="text">Sun.</label>
+			<label for="Mon" class=" col-1 mr-2 text-left" type="text">Mon.</label>
+			<label for="Tues" class=" col-1 mr-2 text-left" type="text">Tues.</label>
+			<label for="Wed" class=" col-1 mr-2 text-left" type="text">Wed.</label>
+			<label for="Thurs" class=" col-1 mr-2 text-left" type="text">Thurs.</label>
+			<label for="Fri" class=" col-1 mr-2 text-left" type="text">Fri.</label> 		
+			<label for="Sat" class=" col-1 mr-2 text-left" type="text">Sat.</label>
+			<div class="col-2"></div>
+	  </div>
+
+	</div>
+	<div class="form-group row">
+		<div class="col-2 "></div>
+		<label for="skips"  class="col-2 col-form-label text-right pr-3">Skips</label>
+		<input name="skips" type="text" class="form-control col-5"  placeholder="Skips"  value="<%= locals.schedule ? locals.schedule.skips : '' %>"  required>
+		<div class="col-3 "></div>
+	</div>
+	<button type="submit" id="submit" name="submit" class="btn btn-primary btn-block" ><%= locals.schedule ? 'Save' : 'Submit' %></button>
+    <br>
+</form>
+<!-- form end herre -->
+                </div>
+                </div>
+            </div>
+        </section>
+    </div>
+<!-- close sidebar -->
+</div>
+<script>
+    var frequency = "<%= locals.schedule ? locals.schedule.frequency : '' %>"
+    var frequencyArr = frequency.split(',');
+    console.log(frequencyArr)
+</script>
+
+<script>
+    $(".remove_empty_option").on('change', function () {
+        if ($(this).find("option:first-child").val() == 'empty') {
+            $(this).find('option').get(0).remove();
+        }
+    });
+</script>
+
+<script>
+    function check() {
+        var type = document.getElementById('type').value;
+        if (type == 'empty') {
+            alert('You missed mandatory fields');
+            return false;
+        }
+        return true;
+    }
+</script>
+<!-- SHOW MESSAGE -->
+<script type="text/javascript">
+	$(function() {
+        $('#showFrequency').change(function(){
+            if($('#showFrequency').val() == 'Weekly'){
+                $('input[name="Dailyfrequency"]').prop('required',false);
+                $('input[name="Sun"]').prop('required',true);
+                $('input[name="Mon"]').prop('required',true);
+                $('input[name="Tues"]').prop('required',true);
+                $('input[name="Wed"]').prop('required',true);
+                $('input[name="Thurs"]').prop('required',true);
+                $('input[name="Fri"]').prop('required',true);
+                $('input[name="Sat"]').prop('required',true);
+                $('#Daily').hide();
+                $('#Weekly').show();
+            }
+            else if($('#showFrequency').val() == 'Daily') {
+                $('input[name="Dailyfrequency"]').prop('required',true);
+                $('input[name="Sun"]').prop('required',false);
+                $('input[name="Mon"]').prop('required',false);
+                $('input[name="Tues"]').prop('required',false);
+                $('input[name="Wed"]').prop('required',false);
+                $('input[name="Thurs"]').prop('required',false);
+                $('input[name="Fri"]').prop('required',false);
+                $('input[name="Sat"]').prop('required',false);
+                $('#Weekly').hide();
+                $('#Daily').show();
+            };
+        });
+	});
+</script>
+<!-- Edit Schedule -->
+<script type="text/javascript">
+	$(function() {
+            if($('#showFrequency').val() == 'Weekly'){
+                $('input[name="Dailyfrequency"]').prop('required',false);
+                $('input[name="Sun"]').prop('required',true);
+                $('input[name="Sun"]').val(frequencyArr[0]);
+                $('input[name="Mon"]').prop('required',true);
+                $('input[name="Mon"]').val(frequencyArr[1]);
+                $('input[name="Tues"]').prop('required',true);
+                $('input[name="Tues"]').val(frequencyArr[2]);
+                $('input[name="Wed"]').prop('required',true);
+                $('input[name="Wed"]').val(frequencyArr[3]);
+                $('input[name="Thurs"]').prop('required',true);
+                $('input[name="Thurs"]').val(frequencyArr[4]);
+                $('input[name="Fri"]').prop('required',true);
+                $('input[name="Fri"]').val(frequencyArr[5]);
+                $('input[name="Sat"]').prop('required',true);
+                $('input[name="Sat"]').val(frequencyArr[6]);
+                $('#Daily').hide();
+                $('#Weekly').show();
+            }
+            else if($('#showFrequency').val() == 'Daily') {
+                $('input[name="Dailyfrequency"]').prop('required',true);
+                $('input[name="Dailyfrequency"]').val(frequencyArr[0]);
+                $('input[name="Sun"]').prop('required',false);
+                $('input[name="Mon"]').prop('required',false);
+                $('input[name="Tues"]').prop('required',false);
+                $('input[name="Wed"]').prop('required',false);
+                $('input[name="Thurs"]').prop('required',false);
+                $('input[name="Fri"]').prop('required',false);
+                $('input[name="Sat"]').prop('required',false);
+                $('#Weekly').hide();
+                $('#Daily').show();
+            };
+	});
+</script>
+<script>
+    $(".remove_empty_option").on('change', function () {
+    if ($(this).find("option:first-child").val() == 'empty') {
+    $(this).find('option').get(0).remove();
+    }
+    });
+</script>
+<%- include('partials/footer.ejs') %>
+</body>
+</html>

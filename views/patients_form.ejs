@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>UTSW TBI Care</title>
+    <meta charset="utf-8">
+    <%- include('partials/header.ejs') %>
+
+    <script src="/public/js/authentication.js"></script>
+    <script src="/public/js/register/register.js"></script>
+    <script src="/public/js/register/strophe.register.js"></script>
+    <script src="/public/js/register/amazon-cognito-auth.min.js"></script>
+    <script src="/public/js/register/amazon-cognito-identity.min.js"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.7.16.min.js"></script>
+    <script src="/models/cognito-config.js"></script>
+    <script src="/public/js/authentication.js"></script>
+    </head>
+<body>
+
+
+<%- include('partials/nav_dashboard.ejs') %>
+<%- include('partials/sidebar.ejs') %>
+
+<%- include('partials/formFormatStart.ejs') %>
+<h1 class="display-4 text-center"><%= title %></h1>
+<hr>
+
+<!-- form start here -->
+    <form class="justify-content-center py-2" id="registerForm" method="POST" action="/website/patients/form" >
+        <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>" />
+        <input type="hidden" name="patient_id" value="<%= locals.patient ? locals.patient.id : -1 %>">
+        <div class="form-group row ">
+            <label for="name"  class="col-3 col-form-label text-right pr-3">Name</label>
+            <input id = "name" name="name" type="text" class="form-control col-6 " value="<%= locals.patient ? locals.patient.name : '' %>" placeholder="Name" required>
+        </div>
+        <hr>
+<!-- USER REGISTER -->
+        <div class="form-group row">
+            <label for="username"  class="col-3 col-form-label text-right pr-3">Username</label>
+            <input name="username" id="username" type="text" class="form-control col-6" value="<%= locals.patient ? locals.patient.username : '' %>" placeholder="Username" required>
+        </div>
+        <div class="form-group row">
+            <label for="email"  class="col-3 col-form-label text-right pr-3">Email</label>
+            <input name="email" id="email" type="text" class="form-control col-6"  value="<%= locals.patient ? locals.patient.email : '' %>"  placeholder="Email" required>
+        </div>
+        <div class="form-group row">
+            <label for="password"  class="col-3 col-form-label text-right pr-3">Password</label>
+            <input name="password"  id="password" type="text" class="form-control col-6"  placeholder="Password" id="password" >
+        </div>
+<!-- OTHER -->
+        <hr>
+        <div class="form-group row">
+        <label for="detail_info"class="col-3 col-form-label text-right" >Detailed Info</label>
+        <textarea name="detail_info" class="form-control col-8" id="detail_info" style="min-height:100px;"  value="<%= locals.patient ? locals.patient.detail_info : '' %>" placeholder="Detailed Information" ><%= locals.patient ? locals.patient.detail_info : '' %></textarea>
+        </div>
+        <div class="form-group row">
+            <label for="color" class="col-3 col-form-label text-right">Color</label>
+            <input name="color" id="color" type="color" class="form-control col-6" value="<%= locals.patient ? locals.patient.color : '' %>" placeholder="Color"  required>
+        </div>
+        <div class="form-group row">
+            <label for="monogram" class="col-3 col-form-label text-right" >Monogram</label>
+            <input name="monogram" type="text" class="form-control col-3" value="<%= locals.patient ? locals.patient.monogram : '' %>"  placeholder="Monogram" >
+        </div>
+        <div class="form-group row">
+             <label for="custom_score_value" class="col-3 col-form-label text-right" >Total Weekly Exercise Time</label>
+             <input name="custom_score_value" type="custom_score_value" class="form-control col-3" placeholder="Weekly Exercise Time in Minutes" value="<%= locals.patient ? locals.patient.custom_score_value/60 : '' %>" required>
+        </div>
+        <div class="form-group row">
+            <label for="image_url" class="col-3 col-form-label text-right" >Image URL</label>
+            <input name="image_url" type="text" class="form-control col-8" value="<%= locals.patient ? locals.patient.image_url : '' %>" placeholder="Image URL" >
+        </div>
+        <div class="form-group row">
+            <label for="categories" class="col-3 col-form-label text-right" >Categories</label>
+            <input name="categories" type="text" class="form-control col-8" value="<%= locals.patient ? locals.patient.categories : '' %>" placeholder="Categories, comman-separated" >
+        </div>
+        <div class="form-group row ">
+            <label for="careTeamContactName" class="col-3 col-form-label text-right" ><i class="fas fa-info-circle mr-2 " data-toggle="tooltip" data-placement="right" title="Hold down the Ctrl (windows) or Command (Mac) button to select multiple options."></i>Care Team Contact
+            </label>
+            <% var care_team_ids = locals.patient ? locals.patient.care_team_contact_id.split(",") : []; %>
+            <select id="care_team"  name="care_team" class="col-6" size="5" multiple required>
+                <% for(var i = 0; i < locals.contacts.length; ++i) { %>
+                    <option value="<%= locals.contacts[i].id %>"
+                        <%= care_team_ids.indexOf(locals.contacts[i].id + '') != -1 ? 'selected' : '' %>>
+                        <%= locals.contacts[i].name %>
+                    </option>
+                    <% } %>
+            </select>    
+        </div>
+        <div class=" text-center"> 
+        <input type="button" id="saveSub" class="btn btn-primary btn-block" value="<%= locals.patient ? 'Save' : 'Submit' %>" onclick="register()"/> 
+        <!-- <input type="submit" class="btn btn-primary btn-block" name="submit" id="submit" type="submit" value="<%= locals.patient ? 'Save' : 'Submit' %>"/> -->
+        </div> 
+    </form>
+<!-- form end here -->
+               </div>
+                </div>
+            </div>
+        </section>
+    </div>
+<!-- close sidebar -->
+</div>
+
+<!-- <script>
+    // debug for chat registration (keep for future potential bugs)
+    document.getElementById('saveSub').onclick = function() {
+        if ("<%= locals.patient %>") {
+            // return false
+            return console.log("S")
+        } else{
+            return register()
+         }
+    }
+</script> -->
+
+<!-- <script>
+    // debug for chat registration (keep for future potential bugs)
+    function chatRegister() {
+        if ("<%= locals.patient %>") {
+            //alert("Submit button clicked!");
+            return console.log("S")
+        } else{
+            //alert("Submit button clicked!");
+            return register()
+        }
+    }
+</script> -->
+
+
+<script>
+    $(".remove_empty_option").on('change', function () {
+        if ($(this).find("option:first-child").val() == 'empty') {
+            $(this).find('option').get(0).remove();
+        }
+    });
+</script>
+
+<script>
+    function check() {
+        var care_team = document.getElementById('care_team').value;
+        if (care_team == 'empty') {
+            alert('You missed mandatory fields');
+            return false;
+        }
+        return true;
+    }
+</script>
+<%- include('partials/footer.ejs') %>
+</body>
+</html>

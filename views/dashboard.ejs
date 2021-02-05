@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>UTSW TBI Care</title>
+    <meta charset="utf-8">
+    <%- include('partials/header.ejs') %>
+    <!-- <script src="/public/js/authentication.js"></script> -->
+    </head>
+<body>
+<%- include('partials/nav_dashboard.ejs') %>
+<%- include('partials/sidebar.ejs') %>
+
+<!-- Page Content  -->
+<div id="content" class="p-4 p-md-5 pt-5">
+    <div style="height: 100px; width: 100%; text-align: center; margin: 10px auto 10px auto;">
+        <img src="/assets/images/logo-1024.png" alt="Logo" style="height: 100px; width: 100px; margin: auto 10px;">
+    </div>
+    <div class="text-center">
+        <h1>Welcome to The TBIcare PMT Physician Portal </h1>
+    </div>
+    <br>
+    <div>
+        <h5>Please do the following to prescribe an exercise:</h5>
+        <ul>
+            <li>Add patient data from the patient's form</li>
+            <li>Set up an exercise schedule time form the schedule form</li>
+            <li>Set up a care team personal contact item from the content item form</li>
+            <li>Add the prescribed exercise from the prescription form</li>
+        </ul>
+        <h5>
+            To observe a patient performance, please check the
+            <a href="/website/attempts" target="_blank"> attempts page <sup><i class="glyphicon glyphicon-new-window"
+                        style="font-size: 10px;"></i></sup></a>
+            then filter the list by patient names.
+        </h5>
+
+        <br><br>
+
+        <h5>Thank you for using the TBIcare portal!</h5><br><br>
+
+
+        <div style="text-align: center;">
+            <h4>
+                For any question please contact us on
+                <a href="mailto:ahmadfawzig.turki@uta.edu" target="_top">ahmadfawzig.turki@uta.edu</a>
+                or
+                <a href="mailto:ming.li@uta.edu" target="_top">ming.li@uta.edu</a>.
+            </h4>
+        </div>
+    </div>
+</div>
+
+
+
+<%- include('partials/footer.ejs') %>
+

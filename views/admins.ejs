@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>UTSW TBI Care</title>
+    <meta charset="utf-8">
+    <%- include('partials/header.ejs') %>
+    <%- include('partials/table.ejs') %>
+    <style>
+    .mybutton {
+        background-color: Transparent;
+        background-repeat:no-repeat;
+        border: none;
+        cursor:pointer;
+        overflow: hidden;
+        outline:none;
+    }
+    </style>
+
+    <style>
+        @media screen and (max-width: 1000px) {
+            #div_filter {
+                height: 160px;
+            }
+        }
+
+        @media screen and (min-width: 1000px) {
+            #div_filter {
+                height: 80px;
+            }
+        }
+    </style>
+
+    <script src="/public/js/authentication.js"></script>
+
+    </head>
+<body>
+
+<%- include('partials/nav_dashboard.ejs') %>
+<%- include('partials/sidebar.ejs') %>
+
+<div id="content"  style="background-color:rgb(233, 231, 231);">
+    <div id="mytable" class="col-12 mx-5 form my-5" style="background-color:white;">
+  <h1 class="font-family: 'Merriweather', serif;
+   text-center">View Admin</h1>
+  <hr>
+
+<div class="container">
+    <div id="div_filter" class="jumbotron" style="padding:20px 5px 100px 5px;">
+        <form action="/website/admins" method="GET">
+            <div class="row">
+                <div class="form-group col-md-4 col-xs-12">
+                    <label class="col-md-5 col-xs-12">Role</label>
+                    <div class="col-md-10 col-xs-12">
+                        <select name="role" id="role" class="form-control">
+                            <option value="all" <%= locals.role && locals.role == 'all' ? 'selected' : '' %>>
+                                All
+                            </option>
+                            <option value="0" <%= locals.role && locals.role == '0' ? 'selected' : '' %>>
+                                No role
+                            </option>
+                            <% for(var i = 0; i < roles.length; ++i) { %>
+                            <option value="<%= roles[i].id %>"
+                                <%= locals.role && locals.role == roles[i].id ? 'selected' : '' %>>
+                                <%= roles[i].name %></option>
+                            <% } %>
+                        </select>
+                    </div>
+                </div>
+                <!-- <div class="form-group col-md-4 col-xs-12">
+                    <label class="col-md-5 col-xs-12">Email Status</label>
+                    <div class="col-md-7 col-xs-12">
+                        <select name="email_verified" id="email_verified" class="form-control">
+                            <option value="all"
+                                <%= locals.email_verified && locals.email_verified == 'all' ? 'selected' : '' %>>
+                                All
+                            </option>
+                            <option value="1"
+                                <%= locals.email_verified && locals.email_verified == '1' ? 'selected' : '' %>>
+                                Verified
+                            </option>
+                            <option value="0"
+                                <%= locals.email_verified && locals.email_verified == '0' ? 'selected' : '' %>>
+                                Not Verified
+                            </option>
+                        </select>
+                    </div>
+                </div> -->
+                <div class="form-group col-md-2 col-xs-12" style="margin: 33px 15px 0px 15px">
+                    <input type="submit" name="filter" id="filter" value="Filter"
+                        class="col-md-12 col-xs-12 btn btn-primary">
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="clearfix"></div>
+<br>
+
+<div style="text-align:center; width: 100%;">
+    <% if(locals.logged_admin.role == 1) { %>
+    <% } %>
+    <div class="clearfix"></div>
+    <br>
+    <div class="table-responsive">
+        <table id="datatable_data" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Email</th>
+                    <!-- <th>Email Status</th> -->
+                    <th>Account Status</th>
+                    <th>Created At</th>
+                    <!-- <th>Edit</th> -->
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Email</th>
+                    <!-- <th>Email Status</th> -->
+                    <th>Account Status</th>
+                    <th>Created At</th>
+                    <!-- <th>Edit</th> -->
+                    <th>Delete</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<% include ./styles_import %>
+
+<script>
+    var data = [];
+</script>
+
+<% for (var i = 0; i < admins.length; ++i) { %>
+<script>
+    var row = [];
+    row.push('<%= admins[i].id %>');
+    row.push('<%= admins[i].username %>');
+    row.push('<%= admins[i].name %>');
+    row.push('<%= admins[i].role_name %>');
+    row.push('<%= admins[i].email %>');
+    //row.push('<%= admins[i].email_verified ? "Verified" : "Not Verified" %>');
+    row.push(`<%= admins[i].enabled ? "Enabled" : "Disabled" %>`);
+    row.push('<%= admins[i].created_at %>');
+    // row.push(`
+    //     <% if(locals.logged_admin.role == 1 || locals.logged_admin.id == admins[i].id) { %>
+    //         <div style="text-align: center; height: 30px; display: inline-block;">
+    //             <div id="div_deactivate" style="text-align:center;">
+    //                 <div class="col-md-2 col-xs-12">
+    //                     <a class="btn btn-primary" title="Edit" href="/website/admins/form?admin_id=<%= admins[i].id %>">
+    //                         <i class="fa fa-edit"></i> Edit
+    //                     </a>
+    //                 </div>
+    //             </div>
+    //         </div>
+            
+    //         <% if(locals.logged_admin.role == 1 && locals.logged_admin.id != admins[i].id) { %>
+    //             <div style="text-align: center; height: 30px; display: inline-block;">
+    //                 <div id="div_edit_<%= admins[i].id %>" style="text-align:center;">
+    //                     <div class="col-md-2 col-xs-12">
+    //                         <button class="btn btn-danger" title="Delete" onclick="delete_admin(<%= admins[i].id %>)">
+    //                             <i class="fa fa-times-circle"></i> Delete
+    //                         </button>
+    //                     </div>
+    //                 </div>
+    //                 <div id="div_spinner_<%= admins[i].id %>" style="display: none; text-align:center;" class="col-md-2 col-xs-12">
+    //                     <br>
+    //                     <div class="col-md-2 col-sm-6 col-xs-12 col-md-offset-6">
+    //                         <div class="spinner"></div>
+    //                     </div>
+    //                 </div>
+    //             </div>
+    //         <% } %>
+    //     <% } %>
+    // `);
+    // row.push(`<div style="margin-left:auto; margin-right:auto; margin-bottom: 0px; width:80px; >"><a style='width:70px' href="/website/admins/form?admin_id=<%= admins[i].id %>" target="_blank" class="btn btn-primary">Edit</a></div>`);
+    row.push('<div style="margin-left:auto; margin-right:auto; margin-bottom: 0px; width:80px; >"><button class="btn btn-danger" title="Delete" onclick="delete_admin(<%= admins[i].id %>)">Delete</button></div>');
+    data.push(row);
+</script>
+<% } %>
+
+<script>
+    function delete_admin(admin_id) {
+        if (confirm("This admin will no longer be able to login. Are you sure you want to delete him?")) {
+            $("#div_spinner_" + admin_id).css('display', '');
+            $("#div_edit_" + admin_id).css('display', 'none');
+            $.ajax({
+                headers: { "x-csrf-token": "<%= locals.csrfToken %>" },
+                url: '/website/admins/delete',
+                type: 'POST',
+                dataType: 'text',
+                data: { admin_id: admin_id }
+            }).done(function (response) {
+                console.log(response);
+                location.reload();
+            }).fail(function (jqXHR, statusText, errorThrown) {
+                console.log('error');
+                var data = JSON.parse(jqXHR.responseText);
+                console.log(data);
+                $("#div_spinner_" + admin_id).css('display', 'none');
+                $("#div_edit_" + admin_id).css('display', '');
+                alert(data.error);
+            });
+        }
+    }
+</script>
+
+<script>
+    $("#datatable_data").DataTable({
+        data: data,
+        dom: "Blfrtip",
+        "autoWidth": false,
+        buttons: [
+            {
+                extend: "copy",
+                className: "btn-sm"
+            },
+            {
+                extend: "csv",
+                className: "btn-sm"
+            },
+            {
+                extend: "excel",
+                className: "btn-sm"
+            },
+            {
+                extend: "pdfHtml5",
+                className: "btn-sm"
+            },
+            {
+                extend: "print",
+                className: "btn-sm"
+            },
+        ],
+        columnDefs: [{
+            targets: [6], // heart rates column
+            render: function (data, type, row) {
+                if (data == "Disabled") data = "<span style='color: red;'>" + data + "</span>";
+                return data;
+            }
+        }],
+        responsive: true,
+        'order': [[0, 'asc']]
+    });
+</script>

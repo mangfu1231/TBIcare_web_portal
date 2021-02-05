@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>UTSW TBI Care</title>
+    <meta charset="utf-8">
+        <%- include('partials/header.ejs') %>
+        <!-- password Validate style -->
+        <!-- <style>
+            #message {
+                display:none;
+                background: #f1f1f1;
+                color: #000;
+                position: relative;
+                padding: 20px;
+                margin-top: 10px;
+            }
+
+            #message p {
+                padding: 0px 35px;
+                font-size: 18px;
+                }
+
+            /* Add a green text color and a checkmark when the requirements are right */
+            .valid {
+            color: green;
+            }
+
+            .valid:before {
+            position: relative;
+            left: -35px;
+            content: "✔";
+            }
+
+            /* Add a red text color and an "x" when the requirements are wrong */
+            .invalid {
+            color: red;
+            }
+
+            .invalid:before {
+            position: relative;
+            left: -35px;
+            content: "✖";
+            }
+        </style> -->
+    </head>
+<body>
+<%- include('partials/nav.ejs') %>
+<div style="background-image: url(/assets/images/background.jpg); background-repeat: no-repeat; position: relative;
+background-size: cover; width: 100%; height: 100%;">
+    <div style="position: absolute; top: 15%; left: 35%; width:30%; height:35%;">
+        <form class="text-white" id="registerForm" method="POST" action="/website/register"  onsubmit="return check()" >
+            <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>" />
+            <input type="hidden" name="admin_id" value="<%= locals.admin ? locals.admin.id : -1 %>">
+            <h1 class="text-center">UTSW TBI Care Register</h1>
+            <br>
+            <div class="form-group">
+                <label for="username"><strong>User Name</strong></label>
+                <input type="text" name="username" class="form-control" placeholder="Username" id="username" />
+            </div>
+            <!-- <div class="form-group">
+                <label for="email"><strong>Email</strong>
+                    </label>
+                <input type="email" name="email" class="form-control" placeholder="Email" id="email" />
+            </div> -->
+            <div class="form-group">
+                <label for="password"><strong>Password</strong>
+                    </label>
+                <input type="password" name="password" class="form-control" placeholder="Password" id="password" />
+            </div>
+            <div class="form-group">
+                <label for="password"><strong>Name</strong></label>
+                <input name="name" id="name" type="text" class="form-control" placeholder="Name"
+                value="<%= locals.admin ? locals.admin.name : '' %>" required />
+            </div>
+            <div class="form-group">
+                <label for="email"><strong>Email</strong></label>
+                <input  name="email" id="email" type="text" class="form-control" placeholder="Email"
+                value="<%= locals.admin ? locals.admin.email : '' %>" required>
+            </div>
+            <div class="form-group">
+                <label for="email"><strong>Role</strong></label>
+
+                <select name="role" id="role" class="form-control">
+                    <% if(!locals.admin) {%>
+                        <option value="" disabled selected>Select Role</option>
+                        <% } %>
+                    <option value="0" <%= locals.admin && locals.admin.role == '0' ? 'selected' : '' %>>
+                        No role
+                    </option>
+                    <% for(var i = 0; i < roles.length; ++i) { %>
+                    <option value="<%= roles[i].id %>"
+                        <%= locals.admin && locals.admin.role == roles[i].id ? 'selected' : '' %>>
+                        <%= roles[i].name %></option>
+                    <% } %>
+                </select>
+            </div>
+            <!-- <div class="form-group">
+                <label for="confirmPassword"><strong>Confirm Password</strong>
+                    </label>
+                <input type="password" name="confirmPassword" class="form-control" placeholder="Confirm Password" id="confirmPassword" />
+            </div> -->
+            <br>
+            <!-- <div class="collapse alert alert-danger mb-2" id="show"></div> 
+            <div id="message">
+                <h5>Password must contain the following:</h5>
+                <p id="letter" class="invalid">A <b>lowercase</b> letter</p>
+                <p id="capital" class="invalid">A <b>capital (uppercase)</b> letter</p>
+                <p id="number" class="invalid">A <b>number</b></p>
+                <p id="length" class="invalid">Minimum <b>8 characters</b></p>
+                <p id="special" class="invalid">A <b>special</b> character</p>
+            </div> -->
+            <br>
+            <input type="submit" class="btn btn-info btn-block" value="Register" onclick="register()"/>
+        </form>
+    </div>
+</div>
+<script>
+    $(".remove_empty_option").on('change', function () {
+        if ($(this).find("option:first-child").val() == 'empty') {
+            $(this).find('option').get(0).remove();
+        }
+    });
+</script>
+
+<script>
+    function check() {
+        var role = document.getElementById('role').value;
+        if (role == 'empty') {
+            alert('You missed mandatory fields');
+            return false;
+        }
+        return true;
+    }
+</script>
+<!-- Password Validate -->
+<!-- <script>
+    var myInput = document.getElementById("password");
+    var letter = document.getElementById("letter");
+    var capital = document.getElementById("capital");
+    var number = document.getElementById("number");
+    var length = document.getElementById("length");
+    var special = document.getElementById("special");
+
+    // When the user clicks on the password field, show the message box
+    myInput.onfocus = function() {
+      document.getElementById("message").style.display = "block";
+    }
+    
+    // When the user clicks outside of the password field, hide the message box
+    myInput.onblur = function() {
+      document.getElementById("message").style.display = "none";
+    }
+    
+    // When the user starts to type something inside the password field
+    myInput.onkeyup = function() {
+      // Validate lowercase letters
+      var lowerCaseLetters = /[a-z]/g;
+      if(myInput.value.match(lowerCaseLetters)) {  
+        letter.classList.remove("invalid");
+        letter.classList.add("valid");
+      } else {
+        letter.classList.remove("valid");
+        letter.classList.add("invalid");
+      }
+      
+      // Validate capital letters
+      var upperCaseLetters = /[A-Z]/g;
+      if(myInput.value.match(upperCaseLetters)) {  
+        capital.classList.remove("invalid");
+        capital.classList.add("valid");
+      } else {
+        capital.classList.remove("valid");
+        capital.classList.add("invalid");
+      }
+    
+      // Validate numbers
+      var numbers = /[0-9]/g;
+      if(myInput.value.match(numbers)) {  
+        number.classList.remove("invalid");
+        number.classList.add("valid");
+      } else {
+        number.classList.remove("valid");
+        number.classList.add("invalid");
+      }
+      
+      // Validate length
+      if(myInput.value.length >= 8) {
+        length.classList.remove("invalid");
+        length.classList.add("valid");
+      } else {
+        length.classList.remove("valid");
+        length.classList.add("invalid");
+      }
+
+      // Validate special character
+      var specialC = /\W|_/g
+      if(myInput.value.match(specialC)) {
+        special.classList.remove("invalid");
+        special.classList.add("valid");
+      } else {
+        special.classList.remove("valid");
+        special.classList.add("invalid");
+      }
+    }
+</script> -->
+</body>
+</html>

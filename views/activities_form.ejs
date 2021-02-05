@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>UTSW TBI Care</title>
+    <meta charset="utf-8">
+    <%- include('partials/header.ejs') %>
+    <script src="/public/js/authentication.js"></script>
+
+    </head>
+<body>
+<%- include('partials/nav_dashboard.ejs') %>
+<%- include('partials/sidebar.ejs') %>
+<%- include('partials/formFormatStart.ejs') %>
+
+<h1 class="display-4 text-center">Add Prescription</h1>
+<hr>
+
+<!-- form start here -->
+<form class="justify-content-center py-2" action="/website/activities/form" method="POST" onsubmit="return check()">
+    <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>" />
+    <input type="hidden" name="activity_id" value="<%= locals.activity ? locals.activity.id : -1 %>">
+    <div class="form-group row">
+		<label for="startDate" class="col-3 col-form-label text-right">Start Date</label>
+		<input type="date" name="start_date" id="start_date" class="form-control col-3"  value="<%= locals.activity ? locals.activity.start_date : '' %>"  required/>
+		<label for="endDate" class="col-2 col-form-label text-right">End Date</label>
+		<input name="end_date" type="date"  id="end_date" class="form-control col-3" value="<%= locals.activity ? locals.activity.end_date : '' %>"  required/>
+		<div class="col-1 "></div>
+    </div>
+    <hr>
+    <!-- Patient -->
+    <div class="form-group row ">
+        <label for="name"  class="col-3 col-form-label text-right pr-3 ">Patient</label>
+        <select type="text" name="patient_id" id="patient_id" class="form-control col-6" placeholder="Type" required>
+            <% if(!locals.activity) {%>
+                <option value="" disabled selected>Select Patient</option>
+                <% } %>
+                <% for(var i = 0; i < patients.length; ++i) { %>
+                <option value="<%= patients[i].id %>"
+                    <%= locals.activity && locals.activity.patient_id == patients[i].id ? 'selected' : '' %>>
+                    <%= patients[i].name %>
+                </option>
+                <% } %>
+        </select>
+    </div>
+    <!-- //Group ID -->
+    <div class="form-group row">
+        <label for="groupId"  class="col-3 col-form-label text-right pr-3">Group ID</label>
+        <input name="group_id" id="group_id" type="text" class="form-control col-4" placeholder="Group ID" >
+    </div>
+    <!-- Type -->
+    <div class="form-group row ">
+        <label for="type"  class="col-3 col-form-label text-right pr-3 ">Type</label>
+        <select name="type" id="type" type="text" class="form-control col-4 " placeholder="Type" required>
+            <% if(!locals.activity) {%>
+                <option value="" disabled selected>Select Type</option>
+                <% } %>
+                <option value="intervention"
+                    <%= locals.activity && locals.activity.type == 'intervention' ? 'selected' : '' %>>
+                    Intervention
+                </option>
+                <option value="assessment"
+                    <%= locals.activity && locals.activity.type == 'assessment' ? 'selected' : '' %>>
+                    Assessment
+                </option>
+                <option value="readonly"
+                    <%= locals.activity && locals.activity.type == 'readonly' ? 'selected' : '' %>>
+                    Readonly
+                </option>
+        </select>
+    </div>
+    <!-- Sub-Type -->
+    <div class="form-group row">
+        <label for="subtype"  class="col-3 col-form-label text-right pr-3">Sub-Type</label>
+        <input name="sub_type" id="sub_type" type="text" class="form-control col-4" placeholder="Sub-Type" value="<%= locals.activity ? locals.activity.subtype : '' %>" required>
+    </div>
+    <!-- Workout Type -->
+    <div class="form-group row ">
+        <label for="workoutType"  class="col-3 col-form-label text-right pr-3 ">Workout Type</label>
+        <select name="workout_type" id="workout_type" class="form-control col-6">
+            <% if(!locals.activity) {%>
+            <option value="" disabled selected>Select Type</option>
+            <% } %>
+            <% for(var i = 0; i < workout_types.length; ++i) { %>
+            <option value="<%= workout_types[i].id %>"
+                <%= locals.activity && locals.activity.workout_type == workout_types[i].id ? 'selected' : '' %>>
+                <%= workout_types[i].category %> | <%= workout_types[i].name %>
+            </option>
+            <% } %>
+        </select>
+    </div>
+    <!-- Location Type -->
+    <div class="form-group row ">
+        <label for="locationType"  class="col-3 col-form-label text-right pr-3 ">Location Type</label>
+        <select name="location_type" id="location_type" type="text" class="form-control col-4 "required>
+            <% if(!locals.activity) {%>
+                <option value="" disabled selected>Select Location Type</option>
+                <% } %>
+                <option value="unknown"
+                    <%= locals.activity && locals.activity.location_type == 'unknown' ? 'selected' : '' %>>
+                    Unknown
+                </option>
+                <option value="indoor"
+                    <%= locals.activity && locals.activity.location_type == 'indoor' ? 'selected' : '' %>>
+                    Indoor
+                </option>
+                <option value="outdoor"
+                    <%= locals.activity && locals.activity.location_type == 'outdoor' ? 'selected' : '' %>>
+                    Outdoor
+                </option>
+        </select>
+    </div>
+    <hr>
+    <!-- TITLE -->
+    <div class="form-group row">
+        <label for="title"  class="col-3 col-form-label text-right pr-3">Title</label>
+        <input name="title" id="title" type="text" class="form-control col-6" placeholder="Title"  value="<%= locals.activity ? locals.activity.title : '' %>" required>
+    </div>
+    <!-- Text -->
+    <div class="form-group row">
+        <label for="text"  class="col-3 col-form-label text-right pr-3">Text</label>
+        <input name="text" id="text" type="text" class="form-control col-6"  placeholder="Text" value="<%= locals.activity ? locals.activity.text : '' %>" >
+    </div>
+    <!-- Instructions -->
+    <div class="form-group row">
+        <label for="instructions"class="col-3 col-form-label text-right" >Instructions</label>
+        <textarea name="instructions" class="form-control col-8" id="instructions" style="min-height:100px;" placeholder="Instructions" required><%= locals.activity ? locals.activity.instructions : '' %></textarea>
+    </div>
+    <!-- Image URL -->
+    <div class="form-group row">
+        <label for="imageURL" class="col-3 col-form-label text-right" >Image URL</label>
+        <input name="image_url" id="image_url" type="text" class="form-control col-8" placeholder="Image URL"  value="<%= locals.activity ? locals.activity.image_url : '' %>" required>
+    </div>
+    <!-- color -->
+    <div class="form-group row">
+        <label for="color" class="col-3 col-form-label text-right">Color</label>
+        <input name="color" id="color" type="color" class="form-control col-6" placeholder="Color" value="<%= locals.activity ? locals.activity.color : '' %>" required >
+    </div>
+    <!-- resultResetable -->
+    <div class="form-group row ">
+        <label for="resultResetable"  class="col-3 col-form-label text-right pr-3 ">Result Resettable</label>
+        <select name="result_resettable"  id="result_resettable"  type="text" class="form-control col-2 "required>
+            <% if(!locals.activity) {%>
+                <option value="" disabled selected>Select</option>
+                <% } %>
+                <option value="1"
+                    <%= locals.activity && locals.activity.result_resettable == '1' ? 'selected' : '' %>>
+                    True
+                </option>
+                <option value="0"
+                    <%= locals.activity && locals.activity.result_resettable == '0' ? 'selected' : '' %>>
+                    False
+                </option>
+        </select>
+    </div>
+    <!-- Schedule -->
+    <div class="form-group row ">
+        <label for="schedule"  class="col-3 col-form-label text-right pr-3 ">Schedule</label>
+        <select name="schedule_id" id="schedule_id" type="text" class="form-control col-6 "  required>
+            <% if(!locals.activity) {%>
+                <option value="" disabled selected>Select schedule</option>
+                <% } %>
+                <% for(var i = 0; i < schedules.length; ++i) { %>
+                <option value="<%= schedules[i].id %>"
+                    <%= locals.activity && locals.activity.schedule_id == schedules[i].id ? 'selected' : '' %>>
+                    <%= schedules[i].type %> | <%= schedules[i].frequency %> | <%= schedules[i].skips %>
+                </option>
+                <% } %>
+        </select>
+        <a href="/website/schedules/form" class="btn btn-primary mb-2 ml-3 form-control col-2" type="button"><span class="fas fa-plus fa-xs mr-2"></span>Schedule</a>
+    </div>
+    <!-- Optional -->
+    <div class="form-group row ">
+        <label for="optional"  class="col-3 col-form-label text-right pr-3 ">Optional</label>
+        <select name="optional" id="optional" type="text" class="form-control col-2 "required>
+            <% if(!locals.activity) {%>
+                <option value="" disabled selected>Select</option>
+                <% } %>
+                <option value="1" <%= locals.activity && locals.activity.optional == '1' ? 'selected' : '' %>>
+                    True
+                </option>
+                <option value="0" <%= locals.activity && locals.activity.optional == '0' ? 'selected' : '' %>>
+                    False
+                </option>
+        </select>
+    </div>
+    <!-- Target Heart Rate -->
+    <div class="form-group row">
+        <label for="targetHeartRate"  class="col-3 col-form-label text-right pr-3">Target Heart Rate</label>
+        <input name="target_heart_rate" id="target_heart_rate" type="number" class="form-control col-4" placeholder="Target Heart Rate (BPM)"  value="<%= locals.activity ? locals.activity.target_heart_rate : '' %>" required>
+    </div>
+    <!-- Target Steps -->
+    <div class="form-group row">
+        <label for="targetSteps"  class="col-3 col-form-label text-right pr-3">Target Steps</label>
+        <input name="target_steps" id="target_steps" type="number" class="form-control col-4" placeholder="Target Steps" value="<%= locals.activity ? locals.activity.target_steps : '' %>">
+    </div>
+    <!-- Target Distance -->
+    <div class="form-group row">
+        <label for="targetDistance"  class="col-3 col-form-label text-right pr-3">Target  Distance</label>
+        <input name="target_distance" id="target_distance" type="number" class="form-control col-4" placeholder="Target Distance (Miles)" value="<%= locals.activity ? locals.activity.target_distance : '' %>" >
+    </div>
+    <!-- Target Active Burned Energy -->
+    <div class="form-group row">
+        <label for="targetActiveBurnedEnergy"  class="col-3 col-form-label text-right pr-3">Target Active Burned Energy</label>
+        <input name="target_active_burned_energy" id="target_active_burned_energy" type="number" class="form-control col-4" placeholder="Target Active Burned Energy (Calories)" value="<%= locals.activity ? locals.activity.target_active_burned_energy : '' %>" >
+    </div>
+    <!-- Target Time  -->
+    <div class="form-group row">
+        <label for="targetTime"  class="col-3 col-form-label text-right pr-3">Target Time</label>
+        <input name="target_time" id="target_time" type="target_time"  class="form-control col-4" placeholder="Target Time (Minutes)" value="<%= locals.activity ? locals.activity.target_time/60 : '' %>">
+    </div>          
+    <div class="form-group row">
+        <label for="summary"class="col-3 col-form-label text-right" >Summary</label>
+        <textarea name="summary" class="form-control col-8" id="summary" style="min-height:100px;" placeholder="Summary" ><%= locals.activity ? locals.activity.summary : '' %></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary btn-block" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Submit</button>
+</form>
+<!-- form end herre -->
+<%- include('partials/formFormatEnd.ejs') %>
+<script>
+    $(".remove_empty_option").on('change', function () {
+        if ($(this).find("option:first-child").val() == 'empty') {
+            $(this).find('option').get(0).remove();
+        }
+    });
+</script>
+
+<script>
+    function check() {
+        var patient_id = document.getElementById('patient_id').value;
+        var type = document.getElementById('type').value;
+        var location_type = document.getElementById('location_type').value;
+        var result_resettable = document.getElementById('result_resettable').value;
+        var schedule_id = document.getElementById('schedule_id').value;
+        var optional = document.getElementById('optional').value;
+        if (patient_id == 'empty' || type == 'empty' || location_type == 'empty' || result_resettable == 'empty' || schedule_id == 'empty' || optional == 'empty') {
+            alert('You missed mandatory fields');
+            return false;
+        }
+        return true;
+    }
+</script>
+<%- include('partials/footer.ejs') %>
+</body>
+</html>

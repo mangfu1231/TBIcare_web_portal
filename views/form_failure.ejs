@@ -1,0 +1,86 @@
+<html>
+
+<head>
+
+    <link rel="icon" type="image/png" href="/favicon.ico">
+
+    <!-- Bootstrap core CSS -->
+    <link href="/stylesheets/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="/stylesheets/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/stylesheets/offcanvas.css" rel="stylesheet">
+    <link href="/stylesheets/less/check-marker.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="/javascripts/assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="/javascripts/ie-emulation-modes-warning.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <style>
+
+    </style>
+</head>
+
+<body>
+
+
+    <!--[if lte IE 9]>
+  <style>
+    .path {stroke-dasharray: 0 !important;}
+  </style>
+<![endif]-->
+
+    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 130.2 130.2">
+        <circle class="path circle" fill="none" stroke="#D06079" stroke-width="6" stroke-miterlimit="10" cx="65.1"
+            cy="65.1" r="62.1" />
+        <line class="path line" fill="none" stroke="#D06079" stroke-width="6" stroke-linecap="round"
+            stroke-miterlimit="10" x1="34.4" y1="37.9" x2="95.8" y2="92.3" />
+        <line class="path line" fill="none" stroke="#D06079" stroke-width="6" stroke-linecap="round"
+            stroke-miterlimit="10" x1="95.8" y1="38" x2="34.4" y2="92.2" />
+    </svg>
+    <p class="error"><b>Failed</b></p>
+    <p class="error"><%= message %></p>
+    <p class="error">
+        <button onclick="redirect()" class="btn btn-primary">Go Back</button>
+    </p>
+    <br>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="/javascripts/vendor/jquery.min.js"><\/script>')</script>
+    <script src="/javascripts/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/javascripts/ie10-viewport-bug-workaround.js"></script>
+    <script src="/javascripts/offcanvas.js"></script>
+
+    <% if (!locals.button) { %>
+    <script>
+        setTimeout(function () {
+            // after 2 seconds
+            window.location = "<%= redirect %>";
+        }, '<%= timeout %>');
+    </script>
+    <% } else { %>
+    <script>
+        function redirect() {
+            window.location = '<%= redirect %>';
+        }
+    </script>
+    <% } %>
+
+</body>
+
+</html>

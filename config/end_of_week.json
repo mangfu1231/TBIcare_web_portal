@@ -1,0 +1,10 @@
+{
+    "host": "localhost",
+    "port": 3030,
+    "path": "/scheduled/endOfWeek/:patient_id",
+    "method": "GET",
+    "headers": {
+        "accept": "application/json",
+        "authorization": "TBI_CARE_675***$!"
+    }
+}

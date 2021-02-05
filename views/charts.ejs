@@ -1,0 +1,343 @@
+<% include ./header %>
+
+<style>
+    @media screen and (max-width: 1000px) {
+        #div_filter {
+            height: 430px;
+        }
+    }
+
+    @media screen and (min-width: 1000px) {
+        #div_filter {
+            height: 230px;
+        }
+    }
+
+    canvas {
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+    }
+</style>
+
+<div class="container">
+    <div id="div_filter" class="jumbotron" style="padding:20px 5px 60px 5px;">
+        <form action="/website/charts/patient" method="GET">
+            <div class="form-group col-md-4 col-xs-12">
+                <label class="col-md-5 col-xs-12">Patient</label>
+                <div class="col-md-7 col-xs-12">
+                    <select name="patient_id" id="patient_id" class="form-control" onchange="digest()">
+                        <% for(var i = 0; i < locals.all_patients.length; ++i) { %>
+                        <option value="<%= locals.all_patients[i].id %>"
+                            <%= locals.patient_id && locals.patient_id == locals.all_patients[i].id ? 'selected' : '' %>>
+                            <%= locals.all_patients[i].id %> | <%= locals.all_patients[i].name %>
+                        </option>
+                        <% } %>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group col-md-4 col-xs-12">
+                <label class="col-md-5 col-xs-12">Activity <small>(ID, Title)</small></label>
+                <div class="col-md-7 col-xs-12">
+                    <select name="activity_id" id="activity_id" class="form-control" onchange="digest('activity')">
+                        <option value="all">All</option>
+                        <% for(var i = 0; i < locals.all_activities.length; ++i) { %>
+                        <% if(locals.all_activities[i].patient_id != locals.patient_id) continue; %>
+                        <option value="<%= locals.all_activities[i].id %>"
+                            <%= locals.activity_id && locals.activity_id == locals.all_activities[i].id ? 'selected' : '' %>>
+                            <%= locals.all_activities[i].id %> | <%= locals.all_activities[i].title %>
+                        </option>
+                        <% } %>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group col-md-4 col-xs-12">
+                <label class="col-md-5 col-xs-12">Event <small>(ID, Number of Days Since Start, Occurrence Index of Day,
+                        State)</small></label>
+                <div class="col-md-7 col-xs-12">
+                    <select name="event_id" id="event_id" class="form-control" onchange="digest('event')">
+                        <option value="all">All</option>
+                        <% for(var i = 0; i < locals.all_events.length; ++i) { %>
+                        <% if(locals.all_events[i].patient_id != locals.patient_id) continue; %>
+                        <% if(locals.activity_id != 'all' && locals.all_events[i].activity_id != locals.activity_id) continue; %>
+                        <option value="<%= locals.all_events[i].id %>"
+                            <%= locals.event_id && locals.event_id == locals.all_events[i].id ? 'selected' : '' %>>
+                            <%= locals.all_events[i].id %> | <%= locals.all_events[i].number_of_days_since_start %>
+                            | <%= locals.all_events[i].occurrence_index_of_day %> | <%= locals.all_events[i].state %>
+                        </option>
+                        <% } %>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group col-md-4 col-xs-12">
+                <label class="col-md-5 col-xs-12">Attempts</label>
+                <div class="col-md-7 col-xs-12">
+                    <select name="attempts" id="attempts" class="form-control" multiple>
+                        <% for(var i = 0; i < locals.all_attempts.length; ++i) { %>
+                        <% if(locals.activity_id != 'all' && locals.all_attempts[i].activity_id != locals.activity_id) continue; %>
+                        <% if(locals.event_id != 'all' && locals.all_attempts[i].event_id != locals.event_id) continue; %>
+                        <% if(locals.all_attempts[i].patient_id != locals.patient_id) continue; %>
+                        <option value="<%= locals.all_attempts[i].id %>"
+                            <%= locals.attempts && locals.attempts.indexOf(locals.all_attempts[i].id + '') != -1 ? 'selected' : '' %>>
+                            <%= locals.all_attempts[i].id %>
+                        </option>
+                        <% } %>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group col-md-2 col-xs-12">
+                <input type="submit" name="filter" id="filter" value="Filter"
+                    class="col-md-12 col-xs-12 btn btn-primary">
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="clearfix"></div>
+<br>
+
+<% include ./styles_import %>
+
+<script>
+    function digest(except) {
+        var patient_id = $("#patient_id").val();
+        var activity_id = $("#activity_id").val();
+        var event_id = $("#event_id").val();
+        console.log('patient_id: ', patient_id);
+        console.log('activity_id: ', activity_id);
+        console.log('event_id: ', event_id);
+
+        if (except != 'activity' && except != 'event') {
+            $("#activity_id").find('option').remove().end();
+            $("#activity_id").append(`<option value='all'>All</option>`)
+            '<% for (var i = 0; i < locals.all_activities.length; ++i) { %>'
+            if (patient_id == '<%= locals.all_activities[i].patient_id %>') {
+                $("#activity_id").append(`
+                    <option value='<%= locals.all_activities[i].id %>'> 
+                        <%= locals.all_activities[i].id %>
+                    </option>
+                `);
+            }
+            console.log('<%= locals.all_activities[i].patient_id %>');
+            '<% } %>'
+        }
+
+        if (except != 'event') {
+            $("#event_id").find('option').remove().end();
+            $("#event_id").append(`<option value='all'>All</option>`)
+            '<% for (var i = 0; i < locals.all_events.length; ++i) { %>'
+            if (patient_id == '<%= locals.all_events[i].patient_id %>' && (activity_id == 'all' || activity_id == '<%= locals.all_events[i].activity_id %>')) {
+                $("#event_id").append(`
+                    <option value='<%= locals.all_events[i].id %>'> 
+                        <%= locals.all_events[i].id %> | <%= locals.all_events[i].number_of_days_since_start %>
+                            | <%= locals.all_events[i].occurrence_index_of_day %> | <%= locals.all_events[i].state %>
+                    </option>
+                `);
+            }
+            console.log('<%= locals.all_events[i].patient_id %>');
+            '<% } %>'
+        }
+
+        $("#attempts").find('option').remove().end();
+        '<% for (var i = 0; i < locals.all_attempts.length; ++i) { %>'
+        if (patient_id == '<%= locals.all_attempts[i].patient_id %>'
+            && (activity_id == 'all' || activity_id == '<%= locals.all_attempts[i].activity_id %>')
+            && (event_id == 'all' || event_id == '<%= locals.all_attempts[i].event_id %>')) {
+            $("#attempts").append(`
+                <option value='<%= locals.all_attempts[i].id %>'> 
+                    <%= locals.all_attempts[i].id %>
+                </option>
+            `);
+        }
+        console.log('<%= locals.all_attempts[i].patient_id %>');
+        '<% } %>'
+    }
+
+</script>
+
+<div style="width:100%;">
+    <canvas id="canvas"></canvas>
+</div>
+<br>
+<br>
+<!-- <button id="randomizeData">Randomize Data</button>
+<button id="addDataset">Add Dataset</button>
+<button id="removeDataset">Remove Dataset</button>
+<button id="addData">Add Data</button>
+<button id="removeData">Remove Data</button> -->
+
+<script>
+    function shuffleArray(array) {
+        for (var i = array.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+    }
+</script>
+
+<script>
+    var x_label = [];
+    for (var i = 0; i < '<%= max_heart_rate_count %>'; ++i) {
+        x_label.push(i + 1);
+    }
+
+    datasets = [];
+    var color_index = 0;
+    var colorNames = Object.keys(window.chartColors);
+    console.log(colorNames);
+    shuffleArray(colorNames);
+</script>
+
+<% for(var i = 0; i < chart_attempts.length; ++i) { %>
+<% if(chart_attempts[i].heart_rates_array.length == 0) continue; %>
+<script>
+    var colorName = colorNames[color_index++ % colorNames.length];
+    var newColor = window.chartColors[colorName];
+    var heart_rates = [<%= chart_attempts[i].heart_rates_array %>];
+    datasets.push({
+        label: 'Attempt ' + '<%= (i + 1) %> (ID: <%= chart_attempts[i].id %>, Count: <%= chart_attempts[i].heart_rates_array.length %>)',
+        backgroundColor: newColor,
+        borderColor: newColor,
+        data: heart_rates,
+        fill: false,
+    })
+</script>
+<% } %>
+
+<script>
+
+    var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    var config = {
+        type: 'line',
+        data: {
+            labels: x_label,
+            datasets: datasets
+            // [{
+            //     label: 'My First dataset',
+            //     backgroundColor: window.chartColors.red,
+            //     borderColor: window.chartColors.red,
+            //     data: [
+            //         randomScalingFactor(),
+            //         randomScalingFactor(),
+            //         randomScalingFactor(),
+            //         randomScalingFactor(),
+            //         randomScalingFactor(),
+            //         randomScalingFactor(),
+            //         randomScalingFactor()
+            //     ],
+            //     fill: false,
+            // }, {
+            //     label: 'My Second dataset',
+            //     fill: false,
+            //     backgroundColor: window.chartColors.blue,
+            //     borderColor: window.chartColors.blue,
+            //     data: [
+            //         randomScalingFactor(),
+            //         randomScalingFactor(),
+            //         randomScalingFactor(),
+            //         randomScalingFactor(),
+            //         randomScalingFactor(),
+            //         randomScalingFactor(),
+            //         randomScalingFactor()
+            //     ],
+            // }]
+        },
+        options: {
+            responsive: true,
+            title: {
+                display: true,
+                text: 'Heart Rates'
+            },
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+            },
+            scales: {
+                x: {
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Month'
+                    }
+                },
+                y: {
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Value'
+                    }
+                }
+            }
+        }
+    };
+
+    window.onload = function () {
+        var ctx = document.getElementById('canvas').getContext('2d');
+        window.myLine = new Chart(ctx, config);
+    };
+
+    // document.getElementById('randomizeData').addEventListener('click', function () {
+    //     config.data.datasets.forEach(function (dataset) {
+    //         dataset.data = dataset.data.map(function () {
+    //             return randomScalingFactor();
+    //         });
+
+    //     });
+
+    //     window.myLine.update();
+    // });
+
+    // var colorNames = Object.keys(window.chartColors);
+    // document.getElementById('addDataset').addEventListener('click', function () {
+    //     var colorName = colorNames[config.data.datasets.length % colorNames.length];
+    //     var newColor = window.chartColors[colorName];
+    //     var newDataset = {
+    //         label: 'Dataset ' + config.data.datasets.length,
+    //         backgroundColor: newColor,
+    //         borderColor: newColor,
+    //         data: [],
+    //         fill: false
+    //     };
+
+    //     for (var index = 0; index < config.data.labels.length; ++index) {
+    //         newDataset.data.push(randomScalingFactor());
+    //     }
+
+    //     config.data.datasets.push(newDataset);
+    //     window.myLine.update();
+    // });
+
+    // document.getElementById('addData').addEventListener('click', function () {
+    //     if (config.data.datasets.length > 0) {
+    //         var month = MONTHS[config.data.labels.length % MONTHS.length];
+    //         config.data.labels.push(month);
+
+    //         config.data.datasets.forEach(function (dataset) {
+    //             dataset.data.push(randomScalingFactor());
+    //         });
+
+    //         window.myLine.update();
+    //     }
+    // });
+
+    // document.getElementById('removeDataset').addEventListener('click', function () {
+    //     config.data.datasets.splice(0, 1);
+    //     window.myLine.update();
+    // });
+
+    // document.getElementById('removeData').addEventListener('click', function () {
+    //     config.data.labels.splice(-1, 1); // remove the label first
+
+    //     config.data.datasets.forEach(function (dataset) {
+    //         dataset.data.pop();
+    //     });
+
+    //     window.myLine.update();
+    // });
+</script>

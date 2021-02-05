@@ -1,0 +1,15 @@
+{
+    "development": {
+        "config_id": "development",
+        "app_name": "dev my app",
+        "app_desc": "dev my app desc",
+        "node_port": 3030,
+        "json_indentation": 4,
+        "database": "tbi-care"
+    },
+    "production": {
+        "config_id": "production",
+        "node_port": 3030,
+        "database": "my-app-db-prod"
+    }
+}

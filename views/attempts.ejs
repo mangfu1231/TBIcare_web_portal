@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>UTSW TBI Care</title>
+    <meta charset="utf-8">
+    <%- include('partials/header.ejs') %>
+    <%- include('partials/table.ejs') %>
+    <style>
+    .mybutton {
+        background-color: Transparent;
+        background-repeat:no-repeat;
+        border: none;
+        cursor:pointer;
+        overflow: hidden;
+        outline:none;
+    }
+    </style>
+    
+    <style>
+        @media screen and (max-width: 1000px) {
+            #div_filter {
+                height: 300px;
+            }
+        }
+
+        @media screen and (min-width: 1000px) {
+            #div_filter {
+                height: 120px;
+            }
+        }
+    </style>
+    <script src="/public/js/authentication.js"></script>
+
+    </head>
+<body>
+
+<%- include('partials/nav_dashboard.ejs') %>
+<%- include('partials/sidebar.ejs') %>
+<div id="content"  style="background-color:rgb(233, 231, 231);">
+    <div id="mytable" class="col-12 mx-5 form my-5" style="background-color:white;">
+  <h1 class="font-family: 'Merriweather', serif;
+   text-center">View Attempts</h1>
+  <hr>
+<div class="container">
+    <div id="div_filter" class="jumbotron" style="padding:20px 5px 60px 5px; height:175px">
+        <form action="/website/attempts" method="GET">
+            <div class="row">
+            <div class="form-group col-md-4 col-xs-12">
+                <label class="col-md-5 col-xs-12">Patient</label>
+                <div class="col-md-7 col-xs-12">
+                    <select name="patient_id" id="patient_id" class="form-control">
+                        <option value="all" <%= locals.patient_id && locals.patient_id == 'all' ? 'selected' : '' %>>
+                            All
+                        </option>
+                        <% for(var i = 0; i < patients.length; ++i) { %>
+                        <option value="<%= patients[i].id %>"
+                            <%= locals.patient_id && locals.patient_id == patients[i].id ? 'selected' : '' %>>
+                            <%= patients[i].name %>
+                        </option> <% } %>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group col-md-4 col-xs-12">
+                <label class="col-md-5 col-xs-12">Activity/Prescription</label>
+                <div class="col-md-7 col-xs-12">
+                    <select name="activity_id" id="activity_id" class="form-control">
+                        <option value="all" <%= locals.activity_id && locals.activity_id == 'all' ? 'selected' : '' %>>
+                            All
+                        </option>
+                        <% for(var i = 0; i < activities.length; ++i) { %>
+                        <option value="<%= activities[i].id %>"
+                            <%= locals.activity_id && locals.activity_id == activities[i].id ? 'selected' : '' %>>
+                            <%= activities[i].id %> | <%= activities[i].title %>
+                        </option> <% } %>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group col-md-4 col-xs-12">
+                <label class="col-md-5 col-xs-12">Event ID</label>
+                <div class="col-md-7 col-xs-12">
+                    <select name="event_id" id="event_id" class="form-control">
+                        <option value="all" <%= locals.event_id && locals.event_id == 'all' ? 'selected' : '' %>>
+                            All
+                        </option>
+                        <% for(var i = 0; i < events.length; ++i) { %>
+                        <option value="<%= events[i].id %>"
+                            <%= locals.event_id && locals.event_id == events[i].id ? 'selected' : '' %>>
+                            <%= events[i].id %>
+                        </option> <% } %>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group col-md-2 col-xs-12" style='margin-left: 1.9%;'>
+                <input type="submit" name="filter" id="filter" value="Filter"
+                    class="col-md-12 col-xs-12 btn btn-primary">
+            </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="clearfix"></div>
+<br>
+
+<div style="text-align:center; width: 100%;">
+    <div class="clearfix"></div>
+    <br>
+    <div class="table-responsive">
+        <table id="datatable_data" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Patient</th>
+                    <th>Activity/ Prescription</th>
+                    <th>Event ID</th>
+                    <th>Steps</th>
+                    <th>Distance</th>
+                    <th>Time</th>
+                    <th>BORG Scale</th>
+                    <th>Workout Assessment</th>
+                    <th>Active Energy Burned</th>
+                    <th>Heart Rate Count</th>
+                    <th>Average Heart Rate</th>
+                    <th>Max Heart Rate</th>
+                    <th>Min Heart Rate</th>
+                    <th>Created At</th>
+                    <th>Heartrate Report</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>ID</th>
+                    <th>Patient</th>
+                    <th>Activity/ Prescription</th>
+                    <th>Event ID</th>
+                    <th>Steps</th>
+                    <th>Distance</th>
+                    <th>Time</th>
+                    <th>BORG Scale</th>
+                    <th>Workout Assessment</th>
+                    <th>Active Energy Burned</th>
+                    <th>Heart Rate Count</th>
+                    <th>Average Heart Rate</th>
+                    <th>Max Heart Rate</th>
+                    <th>Min Heart Rate</th>
+                    <th>Created At</th>
+                    <th>Heartrate Report</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog modal-md">
+
+        <!-- Modal content-->
+        <div class="modal-content" style="text-align: left;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" id="modal_header">Heart Rates</h4>
+            </div>
+            <div class="modal-body">
+                <div class="col-xs-12">
+                    <span id="modal_body"></span>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Dismiss</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<% include ./styles_import %>
+
+<script>
+    function add_attempt() {
+        window.location = '/website/attempts/form';
+    }
+    var data = [];
+</script>
+
+<% for (var i = 0; i < attempts.length; ++i) { %>
+<script>
+    var row = [];
+    row.push('<%= attempts[i].id %>');
+    row.push('<%= attempts[i].patient_name %>');
+    row.push('<%= attempts[i].activity_id %> | <%= attempts[i].activity_title %>');
+    row.push('<%= attempts[i].event_id %>');
+    row.push('<%= attempts[i].steps %>');
+    row.push('<%= attempts[i].distance %>');
+    row.push('<%= Math.round(((attempts[i].time)/60) * 10) / 10 %>');
+    row.push('<%= attempts[i].pain_assessment_name %>');
+    row.push('<%= attempts[i].workout_assessment_name %>');
+    row.push('<%= Math.round(attempts[i].active_energy_burned) %>');
+    row.push('<%= attempts[i].heart_rates_count %>');
+    row.push('<%= attempts[i].heart_rates_avg %>');
+    row.push('<%= attempts[i].heart_rates_max %>');
+    row.push('<%= attempts[i].heart_rates_min %>');
+    row.push('<%= attempts[i].created_at %>');
+    row.push('<a href="/website/attempts/report?attempt_id=<%= attempts[i].id %>" target="_blank" class="btn btn-primary">Download</a>');
+    data.push(row);
+</script>
+<% } %>
+
+<script>
+    function request_report(attempt_id) {
+        $.ajax({
+            url: '/website/attempts/report',
+            method: 'POST',
+            data: { attempt_id: attempt_id }
+        }).done(function (response) {
+            console.log(response);
+        });
+    }
+</script>
+
+<script>
+    $("#myModal").on('show.bs.modal', function (e) {
+        var cell_content = $(e.relatedTarget).data('cell-content');
+        var column_title = $(e.relatedTarget).data('column-title');
+        $("#modal_body").html(cell_content);
+        $("#modal_header").html(column_title);
+    });
+
+</script>
+
+<script>
+    $("#datatable_data").DataTable({
+        data: data,
+        dom: "Blfrtip",
+        "autoWidth": false,
+        columnDefs: [{
+            targets: [4], // heart rates column
+            render: function (data, type, row) {
+                var original_data = data;
+                if (data.length > 10) {
+                    data = "<b>" + data.substr(0, 10) + "</b> ... (" + (data.split(",").length) + " values) ";
+                    data += `
+                        <br/>
+                        <a style='cursor: pointer;' href="#myModal" data-toggle="modal" data-target="#myModal"
+                        data-cell-content='` + original_data.split(',').join(', ') + `'
+                        data-column-title='Heart Rates'>
+                            show all
+                        </a>
+                    `;
+                }
+                return data;
+            }
+        }],
+        buttons: [
+            {
+                extend: "copy",
+                className: "btn-sm"
+            },
+            {
+                extend: "csv",
+                className: "btn-sm"
+            },
+            {
+                extend: "excel",
+                className: "btn-sm"
+            },
+            {
+                extend: "pdfHtml5",
+                className: "btn-sm"
+            },
+            {
+                extend: "print",
+                className: "btn-sm"
+            },
+        ],
+        responsive: true,
+        'order': [[0, 'asc']]
+    });
+</script>
+
+<%- include('partials/footer.ejs') %>
+</body>
+</html>

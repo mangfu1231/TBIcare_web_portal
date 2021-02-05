@@ -1,0 +1,39 @@
+                </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <script>
+    $(".remove_empty_option").on('change', function () {
+    if ($(this).find("option:first-child").val() == 'empty') {
+    $(this).find('option').get(0).remove();
+    }
+    });
+    </script>
+
+    <script>
+        function check() {
+            var care_team = document.getElementById('care_team').value;
+            if (care_team == 'empty') {
+                alert('You missed mandatory fields');
+            return false;
+            }
+            return true;
+    }
+    </script>
+    <script>
+        /*jslint browser:true*/
+        /*global jQuery, document*/
+    
+        jQuery(document).ready(function () {
+            'use strict';
+    
+            jQuery('#filter-date, #search-from-date, #search-to-date').datetimepicker({
+    
+                timepicker: false,
+                datapicker: true,
+                format: 'Y-m-d',
+                weeks: true
+            });
+        });
+    </script>

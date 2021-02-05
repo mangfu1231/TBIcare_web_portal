@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>UTSW TBI Care</title>
+    <meta charset="utf-8">
+    <%- include('partials/header.ejs') %>
+    <%- include('partials/table.ejs') %>
+    <style>
+    .mybutton {
+        background-color: Transparent;
+        background-repeat:no-repeat;
+        border: none;
+        cursor:pointer;
+        overflow: hidden;
+        outline:none;
+    }
+    </style>
+    
+    <style>
+        @media screen and (max-width: 1000px) {
+            #div_filter {
+                height: 380px;
+            }
+        }
+    
+        @media screen and (min-width: 1000px) {
+            #div_filter {
+                height: 130px;
+            }
+        }
+    </style>
+    <script src="/public/js/authentication.js"></script>
+
+    </head>
+<body>
+
+<%- include('partials/nav_dashboard.ejs') %>
+<%- include('partials/sidebar.ejs') %>
+<div id="content"  style="background-color:rgb(233, 231, 231);">
+    <div id="mytable" class="col-12 mx-5 form my-5" style="background-color:white;">
+  <h1 class="font-family: 'Merriweather', serif;
+   text-center">View Event</h1>
+  <hr>
+
+<div class="container">
+    <div id="div_filter" class="jumbotron" style="padding:20px 5px 60px 5px; height:205px">
+        <form action="/website/events" method="GET">
+            <div class="row">
+            <div class="form-group col-md-4 col-xs-12">
+                <label class="col-md-5 col-xs-12">Activity ID</label>
+                <div class="col-md-7 col-xs-12">
+                    <select name="activity_id" id="activity_id" class="form-control">
+                        <option value="all" <%= locals.activity_id && locals.activity_id == 'all' ? 'selected' : '' %>>
+                            All
+                        </option>
+                        <% for(var i = 0; i < activities.length; ++i) { %>
+                        <option value="<%= activities[i].id %>"
+                            <%= locals.activity_id && locals.activity_id == activities[i].id ? 'selected' : '' %>>
+                            <%= activities[i].id %> | <%= activities[i].title %>
+                        </option> <% } %>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group col-md-4 col-xs-12">
+                <label class="col-md-12 col-xs-12">Number of Days Since Start</label>
+                <div class="col-md-7 col-xs-12">
+                    <input type="number" name="number_of_days_since_start" id="number_of_days_since_start"
+                        value="<%= locals.number_of_days_since_start ? locals.number_of_days_since_start : '' %>"
+                        class="form-control">
+                </div>
+            </div>
+            <div class="form-group col-md-4 col-xs-12">
+                <label class="col-md-12 col-xs-12">Occurrence Index of Day</label>
+                <div class="col-md-7 col-xs-12">
+                    <input type="number" name="occurrence_index_of_day" id="occurrence_index_of_day"
+                        value="<%= locals.occurrence_index_of_day ? locals.occurrence_index_of_day : '' %>"
+                        class="form-control">
+                </div>
+            </div>
+            <div class="form-group col-md-4 col-xs-12">
+                <label class="col-md-5 col-xs-12">State</label>
+                <div class="col-md-7 col-xs-12">
+                    <select name="state" id="state" class="form-control">
+                        <option value="all" <%= locals.state && locals.state == 'all' ? 'selected' : '' %>>
+                            All
+                        </option>
+                        <option value="0" <%= locals.state && locals.state == '0' ? 'selected' : '' %>>
+                            0
+                        </option>
+                        <option value="1" <%= locals.state && locals.state == '1' ? 'selected' : '' %>>
+                            1
+                        </option>
+                        <option value="2" <%= locals.state && locals.state == '2' ? 'selected' : '' %>>
+                            2
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group col-md-2 col-xs-12" style='margin-left: 1.9%; margin-top: 3%;'>
+                <input type="submit" name="filter" id="filter" value="Filter"
+                    class="col-md-12 col-xs-12 btn btn-primary">
+            </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="clearfix"></div>
+<br>
+
+<div style="text-align:center; width: 100%;">
+    <div class="clearfix"></div>
+    <br>
+    <div class="table-responsive">
+        <table id="datatable_data" class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Activity ID</th>
+                    <th>Number of Days Since Start</th>
+                    <th>Occurrence Index of Day</th>
+                    <th>State</th>
+                    <th>Created At</th>
+                    <th>Operations</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>ID</th>
+                    <th>Activity ID</th>
+                    <th>Number of Days Since Start</th>
+                    <th>Occurrence Index of Day</th>
+                    <th>State</th>
+                    <th>Created At</th>
+                    <th>Operations</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+<% include ./styles_import %>
+
+<script>
+    function add_event() {
+        window.location = '/website/events/form';
+    }
+    var data = [];
+</script>
+
+<% for (var i = 0; i < events.length; ++i) { %>
+<script>
+    var row = [];
+    row.push('<%= events[i].id %>');
+    row.push('<%= events[i].activity_id %> | <%= events[i].title %>');
+    row.push('<%= events[i].number_of_days_since_start %>');
+    row.push('<%= events[i].occurrence_index_of_day %>');
+    row.push('<%= events[i].state %>');
+    row.push('<%= events[i].created_at %>');
+    row.push(`
+        <div style="text-align: center; height: 30px; display: inline-block;">
+            <div id="div_deactivate" style="text-align:center;">
+                <div class="col-md-2 col-xs-12">
+                    <a class="btn btn-primary" title="Edit" href="/website/events/form?event_id=<%= events[i].id %>">
+                        <i class="fa fa-edit"></i> Edit
+                    </a>
+                </div>
+            </div>
+        </div>
+    `);
+    data.push(row);
+</script>
+<% } %>
+
+<script>
+    $("#datatable_data").DataTable({
+        data: data,
+        dom: "Blfrtip",
+        "autoWidth": false,
+        buttons: [
+            {
+                extend: "copy",
+                className: "btn-sm"
+            },
+            {
+                extend: "csv",
+                className: "btn-sm"
+            },
+            {
+                extend: "excel",
+                className: "btn-sm"
+            },
+            {
+                extend: "pdfHtml5",
+                className: "btn-sm"
+            },
+            {
+                extend: "print",
+                className: "btn-sm"
+            },
+        ],
+        responsive: true,
+        'order': [[0, 'asc']]
+    });
+</script>

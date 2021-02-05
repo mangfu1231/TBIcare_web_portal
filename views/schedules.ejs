@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>UTSW TBI Care</title>
+    <meta charset="utf-8">
+    <%- include('partials/header.ejs') %>
+    <%- include('partials/table.ejs') %>
+    <style>
+    .mybutton {
+        background-color: Transparent;
+        background-repeat:no-repeat;
+        border: none;
+        cursor:pointer;
+        overflow: hidden;
+        outline:none;
+    }
+    </style>
+    <script src="/public/js/authentication.js"></script>
+
+    </head>
+<body>
+
+<%- include('partials/nav_dashboard.ejs') %>
+<%- include('partials/sidebar.ejs') %>
+
+
+
+<div id="content"  style="background-color:rgb(233, 231, 231);">
+  <div id="mytable" class="col-12 mx-5 form my-5" style="background-color:white;">
+<h1 class="font-family: 'Merriweather', serif;
+ text-center">View Schedules</h1>
+<hr>
+
+<!-- form start here -->
+<div class="table-responsive" style="zoom:70%">
+
+<table 
+    id="table"
+    style="position: relative; width:100%"
+    class="table table-striped"
+    data-toggle="table"
+    data-pagination="true"
+    data-search="true"
+    data-show-export="true"
+    data-search-align="left"
+    data-height="950"
+    data-show-toggle="true"
+    data-show-columns="true"
+    data-show-columns-toggle-all="true"
+    data-icon-size = "lg"
+    data-sort-class="table-active"
+    data-sortable="true"
+    data-show-footer="true"
+    data-detail-view="true"
+    data-click-to-select="true"
+    data-detail-formatter="detailFormatter"
+    data-minimum-count-columns="2"
+    data-page-list="[10, 25, 50, 100, all]"
+    data-pagination="true"
+    data-page-number="1"
+    >
+    <thead style="width: auto !important;" id = "mythead" class="black white-text thead-dark">
+        <tr>
+            <th style="width: 3%" data-field="edit">Edit</th>
+            <th data-field="Start Date" data-sortable = "true">Start Date</th>
+            <th data-field="End Date" data-sortable = "true">End Date</th>
+            <th data-field="Type" data-sortable = "true">Type</th>
+            <th data-field="Frequency" data-sortable = "true">Frequency</th>
+            <th data-field="Skips" data-sortable = "true">Skips</th>
+            <th data-field="Created At" data-sortable = "true">Created At</th>
+            <th data-field="delete">Delete</th>
+        </tr>
+    </thead>
+    <tfoot >
+      <tr>
+        <td>Edit</td>
+        <td>Start Date</td>
+        <td>End Date</td>
+        <td>Type</td>
+        <td>Frequency</td>
+        <td>Skips</td>
+        <td>Created At</td>
+        <td>Delete</td>
+      </tr>
+    </tfoot>
+</table>
+</div>
+<!-- colse side bar -->
+</div>
+<!-- give data to table -->
+
+<script>
+  var data =[];
+</script>
+<% for (var i = 0; i < schedules.length; ++i) { %>
+    <script>
+        var obj = {};
+        obj["Start Date"] = '<%= schedules[i].start_date %>';
+        obj["End Date"] = '<%= schedules[i].end_date %>';
+        obj["Type"] = '<%= schedules[i].type %>';
+        obj["Frequency"] = '<%= schedules[i].frequency %>';
+        obj["Skips"] = '<%= schedules[i].skips %>';
+        obj["Created At"] = '<%= schedules[i].created_at %>';
+        obj["ID"] = '<%= schedules[i].id %>';
+        obj["delete"] = 
+        `<button class="mybutton" title="Delete" onclick="delete_schedule(<%= schedules[i].id %>)">
+          <i class="fas fa-trash-alt" style="color: #ab150a;"></i>
+         </button>`;
+        obj["edit"] = '<a title="Edit"  href="/website/schedules/form?schedule_id=<%= schedules[i].id %>"><i class="fas fa-edit"></i></a>';
+        data.push(obj);
+    </script>
+<% } %>
+<script>
+
+var $table = $('#table');
+$table.bootstrapTable({data: data})
+
+
+// undefinedText
+$table.bootstrapTable({
+  undefinedText: 'N/A',
+  data: data
+})
+// detail Formatter
+function detailFormatter(index, row) {
+  var html = []
+  $.each(row, function (key, value) {
+    html.push('<p><b>' + key + ':</b> ' + value + '</p>')
+  })
+  var newarr = html.slice(0,-3);
+  return newarr.join('')
+}
+</script>
+
+<!-- DELETE DATA -->
+<script>
+  function delete_schedule(schedule_id) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.value) {
+          Swal.fire(
+            'Deleted!',
+            'Your file has been deleted.',
+            'success'
+          ).then(function () {
+            $("#div_spinner_" + schedule_id).css('display', '');
+            $("#div_edit_" + schedule_id).css('display', 'none');
+            $.ajax({
+                headers: { "x-csrf-token": "<%= locals.csrfToken %>" },
+                url: '/website/schedules/delete',
+                type: 'POST',
+                dataType: 'text',
+                data: { schedule_id: schedule_id }
+            }).done(function (response) {
+                console.log(response);
+                location.reload();
+            }).fail(function (jqXHR, statusText, errorThrown) {
+                console.log('error');
+                var data = JSON.parse(jqXHR.responseText);
+                console.log(data);
+                $("#div_spinner_" + schedule_id).css('display', 'none');
+                $("#div_edit_" + schedule_id).css('display', '');
+                alert(data.error);
+            });
+        });
+      }
+    })
+  }
+</script>
+
+<% include('partials/tableFormatEnd.ejs') %>
+
+<%- include('partials/footer.ejs') %>
+</body>
+</html>

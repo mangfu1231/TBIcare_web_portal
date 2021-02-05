@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>UTSW TBI Care</title>
+    <meta charset="utf-8">
+    <%- include('partials/header.ejs') %>
+    <script src="/public/js/authentication.js"></script>
+    </head>
+
+<body>
+<%- include('partials/nav_dashboard.ejs') %>
+<%- include('partials/sidebar.ejs') %>
+<%- include('partials/formFormatStart.ejs') %>
+
+<h1 class="font-family: 'Merriweather', serif;
+text-center"><%= title %></h1>
+<hr>
+
+<form action="/website/contacts_info/form" method="POST" onsubmit="return check()">
+    <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>" />
+    <input type="hidden" name="contacts_info_id" value="<%= locals.contacts_info ? locals.contacts_info.id : -1 %>">
+    <div class="form-group row ">
+        <label class="col-md-3 col-3 col-form-label text-right pr-3">Type</label>
+            <select name="type" id="type" class="form-control col-6 ">
+                <% if(!locals.contacts_info) {%>
+                <option value="empty"></option>
+                <% } %>
+                <option value="Phone"
+                    <%= locals.contacts_info && locals.contacts_info.type == 'Phone' ? 'selected' : '' %>>
+                    Phone
+                </option>
+                <option value="SMS"
+                    <%= locals.contacts_info && locals.contacts_info.type == 'SMS' ? 'selected' : '' %>>
+                    SMS
+                </option>
+                <option value="Email"
+                    <%= locals.contacts_info && locals.contacts_info.type == 'Email' ? 'selected' : '' %>>
+                    Email
+                </option>
+            </select>
+    </div>
+    <div class="form-group row ">
+        <label class="col-3 col-form-label text-right">Value</label>
+        <input name="value" id="value" type="text" class="form-control col-6" placeholder="Value"
+                value="<%= locals.contacts_info ? locals.contacts_info.value : '' %>" required>
+    </div>
+    <div class="form-group row ">
+        <input name="submit" id="submit" type="submit" value="<%= locals.contacts_info ? 'Save' : 'Submit' %>"
+            class="btn btn-primary btn-block" required>
+    </div>
+</form>
+
+<% include ./styles_import %>
+
+<script>
+    $(".remove_empty_option").on('change', function () {
+        if ($(this).find("option:first-child").val() == 'empty') {
+            $(this).find('option').get(0).remove();
+        }
+    });
+</script>
+
+<script>
+    function check() {
+        var type = document.getElementById('type').value;
+        if (type == 'empty') {
+            alert('You missed mandatory fields');
+            return false;
+        }
+        return true;
+    }
+</script>

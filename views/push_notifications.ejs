@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>UTSW TBI Care</title>
+    <meta charset="utf-8">
+    <%- include('partials/header.ejs') %>
+    <style>
+        *,
+        *:after,
+        *:before {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+        }
+    
+        .clearfix:before,
+        .clearfix:after {
+            content: " ";
+            display: table;
+        }
+    
+        .clearfix:after {
+            clear: both;
+        }
+    
+        body {
+            font-family: sans-serif;
+            background: white;
+        }
+    
+        h1 {
+            color: #ccc;
+            text-align: center;
+        }
+    
+        a {
+            color: #ccc;
+            text-decoration: none;
+            outline: none;
+        }
+    
+        /*Fun begins*/
+        .tab_container {
+            width: 90%;
+            margin: 0 auto;
+            padding-top: 20px;
+            position: relative;
+        }
+    
+        input,
+        section {
+            clear: both;
+            padding-top: 10px;
+            display: none;
+        }
+    
+        .tab-label {
+            font-weight: 700;
+            font-size: 18px;
+            display: block;
+            float: left;
+            width: 20%;
+            padding: 1.5em;
+            color: #757575;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            background: #f0f0f0;
+        }
+    
+        #tab1:checked~#content1,
+        #tab2:checked~#content2 {
+            display: block;
+            padding: 20px;
+            background: #f6f9fa;
+            color: #999;
+            border-bottom: 2px solid #f0f0f0;
+        }
+    
+        .tab_container .tab-content p,
+        .tab_container .tab-content h3 {
+            -webkit-animation: fadeInScale 0.7s ease-in-out;
+            -moz-animation: fadeInScale 0.7s ease-in-out;
+            animation: fadeInScale 0.7s ease-in-out;
+        }
+    
+        .tab_container .tab-content h3 {
+            text-align: center;
+        }
+    
+        .tab_container [id^="tab"]:checked+.tab-label {
+            background: #fff;
+            box-shadow: inset 0 3px #0CE;
+        }
+    
+        .tab_container [id^="tab"]:checked+.tab-label .fa {
+            color: #0CE;
+        }
+    
+        .tab-label .fa {
+            font-size: 1.3em;
+            margin: 0 0.4em 0 0;
+        }
+    
+        /*Media query*/
+        @media only screen and (max-width: 930px) {
+            .tab-label span {
+                font-size: 14px;
+            }
+    
+            .tab-label .fa {
+                font-size: 14px;
+            }
+        }
+    
+        @media only screen and (max-width: 768px) {
+            .tab-label span {
+                display: none;
+            }
+    
+            .tab-label .fa {
+                font-size: 16px;
+            }
+    
+            .tab_container {
+                width: 98%;
+            }
+        }
+    
+        /*Content Animation*/
+        @keyframes fadeInScale {
+            0% {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+    
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    
+        div.vertical-line {
+            width: 1px;
+            background-color: silver;
+            height: 100%;
+            float: left;
+            border: 2px ridge silver;
+            border-radius: 2px;
+        }
+    
+        @media screen and (max-width: 1000px) {
+            #vertical-line {
+                display: none;
+            }
+        }
+    </style>
+    
+    <script src="/public/js/authentication.js"></script>
+
+    </head>
+<body>
+
+<%- include('partials/nav_dashboard.ejs') %>
+<%- include('partials/sidebar.ejs') %>
+
+<div id="content"  style="background-color:rgb(233, 231, 231);">
+    <div id="mytable" class="col-12 mx-5 form my-5" style="background-color:white;">
+  <h1 class="font-family: 'Merriweather', serif;
+   text-center">Push Notifications</h1>
+  <hr>
+<div class="tab_container">
+
+    <input id="tab1" type="radio" name="tabs">
+    <label class="tab-label" for="tab1" style="width: 50%;"><i class="fa fa-folder-open-o"></i><span>Push To Specific
+            Patients</span>
+    </label>
+
+    <input id="tab2" type="radio" name="tabs" checked>
+    <label class="tab-label" for="tab2" style="width: 50%;"><i class="fa fa-pencil-square-o"></i><span>Schedule Dialy
+            Notifications For
+            Patients</span>
+    </label class="tab-label">
+
+    <section id="content1" class="tab-content">
+
+        <div class="container">
+            <div class="form-group col-12">
+                <label class="col-md-4 col-xs-12">Patients</label>
+                <div class="col-md-8 col-xs-12">
+                    <select name="patients" id="patients" class="col-12" size="5" multiple>
+                        <% for(var i = 0; i < locals.patients.length; ++i) { %>
+                        <option value="<%= patients[i].id %>">
+                            <%= patients[i].name %>
+                        </option>
+                        <% } %>
+                    </select>
+                </div>
+            </div>
+
+<hr>
+            <div class="row">
+                <div class="form-group col-md-7 col-xs-12">
+                    <label class="col-md-2 col-xs-12">Title</label>
+                    <div class="col-md-8 col-xs-12">
+                        <input type="text" name="title" id="title" class="form-control">
+                    </div>
+                </div>
+
+                <div class="form-group col-md-7 col-xs-12">
+                    <label class="col-md-2 col-xs-12">Body</label>
+                    <div class="col-md-8 col-xs-12">
+                        <textarea name="body" id="body" style="min-height:200px;" class="form-control col-md-8 col-xs-12"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group col-md-7 col-xs-12" style="text-align: center;">
+                    <button class="btn btn-primary  btn-block" id="send_tab1">Send</button>
+                </div>
+                <div id="div_spinner" style="display: none; text-align:center;" class="col-md-7 col-xs-12">
+                    <div class="col-md-12">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <br>
+            <table class="table table-bordered table-striped" id="specific_failed" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Reason</th>
+                    </tr>
+                </thead>
+
+                <tfoot>
+                    <tr>
+                        <th>Patient</th>
+                        <th>Reason</th>
+                    </tr>
+                </tfoot>
+            </table>
+
+        </div>
+
+
+    </section>
+
+    <section id="content2" class="tab-content">
+
+        <div class="container">
+
+            <div class="form-group col-md-5 col-xs-10 col-md-offset-3">
+                <label class="col-md-4 col-xs-3">Patient</label>
+                <div class="col-md-8 col-xs-9">
+                    <select name="patient" id="patient" class="form-control col-xs-12">
+                        <option value="" id="option_remove"></option>
+                        <% for(var i = 0; i < locals.patients.length; ++i) { %>
+                        <option value="<%= patients[i].id %>">
+                            <%= patients[i].name %>
+                        </option>
+                        <% } %>
+                    </select>
+                </div>
+            </div>
+
+            <div id="div_spinner_scheduled" style="display: none;" class="col-md-1 col-xs-1">
+                <br>
+                <div class="col-md-6 col-xs-1">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="clearfix"></div>
+
+        <br>
+        <table class="table table-bordered table-striped" id="scheduled_table" style="display: none;">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Time</th>
+                    <th>Operations</th>
+                </tr>
+            </thead>
+
+            <tfoot>
+                <tr>
+                    <th>ID</th>
+                    <th>Time</th>
+                    <th>Operations</th>
+                </tr>
+            </tfoot>
+        </table>
+
+</div>
+
+</section>
+
+</div>
+</div>
+
+<% include ./styles_import %>
+
+<script>
+    $("#send_tab1").click(function () {
+        var patients = $("#patients").val();
+        var title = $("#title").val();
+        var body = $("#body").val();
+        if (!patients.length) {
+            alert("You have to choose at least one patient");
+            return;
+        }
+        if (!title) {
+            alert("You have to provide the title");
+            return;
+        }
+        if (!body) {
+            alert("You have to provide the body");
+            return;
+        }
+        if (confirm("Are you sure you want to send this notification?")) {
+            $("#div_spinner").css('display', '');
+            $("#send_tab1").css('display', 'none');
+            $("#specific_failed").css('display', 'none');
+            $("#specific_failed").DataTable().destroy();
+            $.ajax({
+                headers: { "x-csrf-token": "<%= locals.csrfToken %>" },
+                type: "POST",
+                url: "/website/push/specific",
+                data: { patients: patients.join(","), title: title, body: body }
+            }).done(function (response) {
+                console.log(response);
+                $("#div_spinner").css('display', 'none');
+                $("#send_tab1").css('display', '');
+                if (response.success) {
+                    var result = response.result;
+                    if (result.sent.length == patients.length) {
+                        alert("Done!");
+                    }
+                    else {
+                        alert(result.failed.length + " patients failed. Please check the table below");
+                        $("#specific_failed").css('display', '');
+                        $("#specific_failed").DataTable().destroy();
+                        $("#specific_failed").DataTable({
+                            data: response.failed_table,
+                            dom: "Blfrtip",
+                            "autoWidth": false,
+                            buttons: [
+                                {
+                                    extend: "copy",
+                                    className: "btn-sm"
+                                },
+                                {
+                                    extend: "csv",
+                                    className: "btn-sm"
+                                },
+                                {
+                                    extend: "excel",
+                                    className: "btn-sm"
+                                },
+                                {
+                                    extend: "pdfHtml5",
+                                    className: "btn-sm"
+                                },
+                                {
+                                    extend: "print",
+                                    className: "btn-sm"
+                                },
+                            ],
+                            responsive: true,
+                            'order': [[0, 'asc']]
+                        });
+                    }
+                }
+                else {
+                    alert(response.error);
+                }
+            }).fail(function () {
+                $("#div_spinner").css('display', 'none');
+                $("#send_tab1").css('display', '');
+            });
+        }
+    });
+</script>
+
+<script>
+
+    var remove_button = `
+    <button class="btn btn-danger" id="remove_schedule" onclick="remove_schedule(this.parentNode.parentNode)">
+        Remove
+    </button>
+    <div id="div_spinner_remove_scheduled" style="display: none; margin-top: 10px;" class="col-md-1 col-xs-1 col-md-offset-5 col-xs-offset-3">
+        <div class="col-md-6 col-xs-1">
+            <div class="spinner"></div>
+        </div>
+    </div>
+    `;
+
+    function fetch_data() {
+        var patient_id = $("#patient").val();
+        if (!patient_id) {
+            return;
+        }
+        $.ajax({
+            headers: { "x-csrf-token": "<%= locals.csrfToken %>" },
+            type: 'GET',
+            url: '/website/push/scheduled/get',
+            data: { patient_id: patient_id }
+        }).done(function (response) {
+            console.log(response);
+            $("#div_spinner_scheduled").css('display', 'none');
+            $("#div_add_schedule").css('display', '');
+            if (response.success) {
+                var rows = [];
+                for (var i = 0; i < response.notification_times.length; ++i) {
+                    rows.push([
+                        response.notification_times[i].id,
+                        response.notification_times[i].push_time,
+                        remove_button
+                    ]);
+                }
+                rows.push([
+                    '',
+                    '<input type="time" name="push_time" id="push_time" class="form-control col-md-6 col-xs-12" />',
+                    `
+                    <button class="btn btn-success" id="add_schedule" onclick="add_schedule()">
+                        Add
+                    </button>
+                    <div id="div_spinner_add_scheduled" style="display: none;" class="col-md-1 col-xs-1 col-md-offset-5 col-xs-offset-3">
+                        <br/>
+                        <div class="col-md-6 col-xs-1">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                    `
+                ]);
+                $("#scheduled_table").css('display', '');
+                $("#scheduled_table").DataTable().destroy();
+                $("#scheduled_table").DataTable({
+                    data: rows,
+                    dom: "Blfrtip",
+                    buttons: false,
+                    autoWidth: false,
+                    paging: false,
+                    searching: false,
+                    info: false,
+                    responsive: true,
+                });
+            }
+            else {
+                alert(response.error);
+            }
+        }).fail(function () {
+            $("#div_spinner_scheduled").css('display', 'none');
+        });
+    }
+
+
+    $("#patient").on('change', function () {
+        fetch_data();
+        $("#option_remove").remove();
+        $("#div_spinner_scheduled").css('display', '');
+        var patient_id = this.value;
+        fetch_data();
+    });
+
+    function add_schedule() {
+        var patient_id = $("#patient").val();
+        var push_time = $("#push_time").val();
+        if (!push_time) {
+            alert("You have to choose full time");
+            return;
+        }
+        $("#div_spinner_add_scheduled").css('display', '');
+        $("#add_schedule").css('display', 'none');
+        $.ajax({
+            headers: { "x-csrf-token": "<%= locals.csrfToken %>" },
+            type: 'POST',
+            url: '/website/push/scheduled/add',
+            data: { patient_id: patient_id, push_time: push_time }
+        }).done(function (response) {
+            console.log(response);
+            $("#div_spinner_add_scheduled").css('display', 'none');
+            $("#add_schedule").css('display', '');
+            if (response.success) {
+                $("#scheduled_table").DataTable().row.add([
+                    response.last_record.id,
+                    response.last_record.push_time,
+                    remove_button,
+                ]).draw();
+            }
+            else {
+                alert(response.error);
+            }
+        }).fail(function () {
+            // $("#div_spinner_scheduled").css('display', 'none');
+            $("#div_spinner_add_scheduled").css('display', 'none');
+            $("#add_schedule").css('display', '');
+        });
+    }
+
+    function remove_schedule(element) {
+        if (confirm("Are you sure you want to delete this record?")) {
+            var notification_id = element.childNodes[0].innerHTML;
+            console.log(element);
+            $("#div_spinner_remove_scheduled").css('display', '');
+            $("#remove_schedule").css('display', 'none');
+            element.id = 'row_id';
+            $.ajax({
+                headers: { "x-csrf-token": "<%= locals.csrfToken %>" },
+                type: 'POST',
+                url: '/website/push/scheduled/remove',
+                data: { notification_id: notification_id }
+            }).done(function (response) {
+                console.log(response);
+                $("#div_spinner_remove_scheduled").css('display', 'none');
+                $("#remove_schedule").css('display', '');
+                if (response.success) {
+                    $("#scheduled_table").DataTable().destroy();
+                    fetch_data();
+                }
+                else {
+                    alert(response.error);
+                }
+            }).fail(function () {
+                $("#div_spinner_remove_scheduled").css('display', 'none');
+                $("#remove_schedule").css('display', '');
+            });
+        }
+    }
+</script>
+<%- include('partials/footer.ejs') %>

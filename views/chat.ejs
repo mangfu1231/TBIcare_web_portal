@@ -1,0 +1,37 @@
+
+<%- include('partials/chatHeader.ejs') %>
+
+
+<script>
+    converse.initialize({
+		authentication: 'login',
+        auto_away: 300,
+        auto_reconnect: true,
+        discover_connection_methods: true,
+        bosh_service_url: 'https://utswtbi.com/http-bind/',
+
+		auto_login: true,
+        show_controlbox_by_default: false,
+        message_archiving: 'always',
+        credentials_url: "../public/data/credentials/" + localStorage.getItem("username") + ".json",
+        view_mode: 'fullscreen',
+        allow_muc: false,
+        default_domain: '54.82.188.133',
+        registration_domain: '54.82.188.133',
+        allow_registration: true,
+        locked_domain: '54.82.188.133',
+        // domain_placeholder: false,
+        // allow_logout: false,
+		muc_nickname_from_jid: true
+        
+    });
+</script>
+<script>
+
+
+</script>
+
+</body>
+
+</html>
+

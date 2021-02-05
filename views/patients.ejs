@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>UTSW TBI Care</title>
+    <meta charset="utf-8">
+    <%- include('partials/header.ejs') %>
+    <%- include('partials/table.ejs') %>
+    <style>
+    .mybutton {
+        background-color: Transparent;
+        background-repeat:no-repeat;
+        border: none;
+        cursor:pointer;
+        overflow: hidden;
+        outline:none;
+    }
+    </style>
+    <script src="/public/js/authentication.js"></script>
+
+    </head>
+<body>
+
+<%- include('partials/nav_dashboard.ejs') %>
+<%- include('partials/sidebar.ejs') %>
+
+
+<div id="content"  style="background-color:rgb(233, 231, 231);">
+  <div id="mytable" class="col-12 mx-5 form my-5" style="background-color:white;">
+<h1 class="font-family: 'Merriweather', serif;
+ text-center">View Patients</h1>
+<hr>
+
+<!-- Archive function -->
+  <div id="div_filter" class="jumbotron" style="padding:20px 5px 60px 5px; height:75px">
+    <form action="/website/patients" method="GET">
+      <div class="row">
+        <div class="form-group col-md-3 col-xs-12" style='margin-right: -10%;'>
+          <div class="col-md-7 col-xs-12" >
+            <select name="deleted" id="deleted" class="form-control">
+              <option value="0" <%= locals.deleted && locals.deleted == 0 ? 'selected' : '' %>>
+                Active
+              </option>
+              <option value="1" <%= locals.deleted && locals.deleted == 1 ? 'selected' : '' %>>
+                Archived
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group col-md-1 col-xs-12" >
+          <input type="submit" name="filter" id="filter" value="Confirm" class="col-md-12 col-xs-12 btn btn-primary">
+        </div>
+
+      </div>
+    </form>
+  </div>
+
+
+
+<!-- form start here -->
+<div class="table-responsive" style="zoom:70%">
+
+<table 
+    id="table"
+    style="position: relative; width:100%"
+    class="table table-striped"
+    data-toggle="table"
+    data-pagination="true"
+    data-search="true"
+    data-show-export="true"
+    data-search-align="left"
+    data-height="950"
+    data-show-toggle="true"
+    data-show-columns="true"
+    data-show-columns-toggle-all="true"
+    data-icon-size = "lg"
+    data-sort-class="table-active"
+    data-sortable="true"
+    data-show-footer="true"
+    data-detail-view="true"
+    data-click-to-select="true"
+    data-detail-formatter="detailFormatter"
+    data-minimum-count-columns="2"
+    data-page-list="[10, 25, 50, 100, all]"
+    data-pagination="true"
+    data-page-number="1"
+    >
+    <thead style="width: auto !important;" id = "mythead" class="black white-text thead-dark">
+        <tr>
+            <th style="width: 3%" data-field="edit">Edit</th>
+            <th data-field="Name" data-sortable = "true">Name</th>
+            <th data-field="Username" data-sortable = "true">Username</th>
+            <th data-field="Email" data-sortable = "true">Email</th>
+            <th data-field="Detailed Info" data-sortable = "true">Detailed Info</th>
+            <th style="width: 3%" data-field="View Chart" >View Chart</th>
+            <th data-field="Monogram" data-sortable = "true">Monogram</th>
+            <th data-field="custom_score_value" data-sortable = "true">Total Weekly Exercise Time (Min)</th>
+            <th data-field="Categories" data-sortable = "true">Categories</th>
+            <th data-field="Care Team Contacts" data-sortable = "true">Care Team Contacts</th>
+            <th data-field="Created At" data-sortable = "true">Created At</th>
+            <th data-field="delete">Archive</th>
+        </tr>
+    </thead>
+    <tfoot >
+      <tr>
+        <td>Edit</td>
+        <td>Name</td>
+        <td>Username</td>
+        <td>Email</td>
+        <td>Detailed Info</td>
+        <td>View Chart</td>
+        <td>Monogram</td>
+        <td>Total Weekly Exercise Time (Min)</td>
+        <td>Categories</td>
+        <td>Care Team Contacts</td>
+        <td>Created At</td>
+        <td>Archive</td>
+      </tr>
+    </tfoot>
+</table>
+</div>
+<!-- colse side bar -->
+</div>
+<!-- give data to table -->
+
+<script>
+  var data =[];
+</script>
+<% for (var i = 0; i < patients.length; ++i) { %>
+    <script>
+        var obj = {};
+        obj["Name"] = '<%= patients[i].name %>';
+        obj["Username"] = '<%= patients[i].username %>';
+        obj["Email"] = '<%= patients[i].email %>';
+        obj["Email Status"] = '<%= patients[i].email_verified ? "Verified" : "Unverified" %>';
+        obj["Detailed Info"] = '<%= patients[i].detail_info %>';
+        obj["View Chart"] = `<a class="mybutton" href="/website/charts/patient?patient_id=<%= patients[i].id %>" target="_blank">
+                            <span class="fas fa-chart-area mr-3"></span>View Chart</a>`;
+        obj["Color"] = '<span style=" color: black height:30px; width:400px; background-color:<%= patients[i].color %>"><%= patients[i].color %></span>';
+        obj["Monogram"] = '<%= patients[i].monogram %>';
+        obj["custom_score_value"] = '<%= patients[i].custom_score_value/60 %>';
+        obj["Image URL"] = '<a href = <%= patients[i].image_url %>"><%= patients[i].image_url %><a>';
+        obj["Categories"] = '<%= patients[i].categories %>';
+        obj["Care Team Contacts"] = `<% if(patients[i].care_team_contacts.length) { %>
+                                    <% for(var j = 0; j < patients[i].care_team_contacts.length; ++j) { %>
+                                                <% if(j) { %> <hr/> <% } %> 
+                                                <span><b>Type:</b> <%= patients[i].care_team_contacts[j].type %></span><br>
+                                                <span><b>Name:</b> <button class="btn btn-link p-0 pb-1" data-toggle="modal" data-target="#contact_modal<%= j %>">
+                                                    <a> <%= patients[i].care_team_contacts[j].name %></a>
+                                                </button></span><br>
+                                                
+                                                <div class="modal fade" id="contact_modal<%= j %>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel"><%= patients[i].care_team_contacts[j].name %></h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <span><b>Type:</b> <%= patients[i].care_team_contacts[j].type %></span><br>
+                                                    <span><b>Relation:</b> <%= patients[i].care_team_contacts[j].relation %></span><br>
+                                                    <span><b>Name:</b> <%= patients[i].care_team_contacts[j].name %></span><br>
+                                                    <span>
+                                                      <% for(k = 0; k < patients[i].care_team_contacts[j].contact_items.length; ++k) { %>
+                                                        <b><%= patients[i].care_team_contacts[j].contact_items[k].type %></b>: <%= patients[i].care_team_contacts[j].contact_items[k].value %><br>
+                                                      <% } %>
+                                                    </span>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                </div>
+                                                </div>
+                                            </div>
+                                            </div>
+                                            <% } %>
+                                        <% } else { %>
+                                            <b>No Information Provided</b>
+                                        <% } %>`;
+        obj["Created At"] = '<%= patients[i].created_at %>';
+        obj["ID"] = '<%= patients[i].id %>';
+        obj["delete"] = 
+        `<button class="mybutton" title="Delete" onclick="delete_patient(<%= patients[i].id %>)">
+          <i class="fas fa-trash-alt" style="color: #ab150a;"></i>
+         </button>`;
+        obj["edit"] = '<a title="Edit"  href="/website/patients/form?patient_id=<%= patients[i].id %>"><i class="fas fa-edit"></i></a>';
+        data.push(obj);
+    </script>
+<% } %>
+<script>
+
+var $table = $('#table');
+$table.bootstrapTable({data: data})
+
+
+// undefinedText
+$table.bootstrapTable({
+  undefinedText: 'N/A',
+  data: data
+})
+// detail Formatter
+function detailFormatter(index, row) {
+  var html = []
+  $.each(row, function (key, value) {
+    html.push('<p><b>' + key + ':</b> ' + value + '</p>')
+  })
+  var newarr = html.slice(0,-3);
+  return newarr.join('')
+}
+</script>
+
+<!-- DELETE DATA -->
+<script>
+  function delete_patient(patient_id) {
+    Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      }).then((result) => {
+        if (result.value) {
+          Swal.fire(
+            'Deleted!',
+            'Your file has been deleted.',
+            'success'
+          ).then(function () {
+            $("#div_spinner_" + patient_id).css('display', '');
+            $("#div_edit_" + patient_id).css('display', 'none');
+            $.ajax({
+                headers: { "x-csrf-token": "<%= locals.csrfToken %>" },
+                url: '/website/patients/delete',
+                type: 'POST',
+                dataType: 'text',
+                data: { patient_id: patient_id }
+            }).done(function (response) {
+                console.log(response);
+                location.reload();
+            }).fail(function (jqXHR, statusText, errorThrown) {
+                console.log('error');
+                var data = JSON.parse(jqXHR.responseText);
+                console.log(data);
+                $("#div_spinner_" + patient_id).css('display', 'none');
+                $("#div_edit_" + patient_id).css('display', '');
+                alert(data.error);
+            });
+        });
+      }
+    })
+  }
+</script>
+
+<% include('partials/tableFormatEnd.ejs') %>
+
+<%- include('partials/footer.ejs') %>
+</body>
+</html>

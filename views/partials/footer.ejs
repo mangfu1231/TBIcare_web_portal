@@ -1,0 +1,49 @@
+
+        
+    <script src="/js/main.js"></script>
+
+    <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script> -->
+
+    <!-- <script src="/vendor/jquery.datetimepicker.full.min.js"></script>
+    <script src="/vendor/jquery.datetimepicker.full.js"></script> -->
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="/javascripts/ie10-viewport-bug-workaround.js"></script>
+    <script src="/javascripts/offcanvas.js"></script>
+
+    <script>
+        $("#logout").click(function () {
+            $.ajax({
+                headers: { "x-csrf-token": "<%= locals.csrfToken %>" },
+                url: '/website/logout',
+                type: 'POST'
+            }).done(function (response) {
+                localStorage.removeItem("username");
+    			localStorage.removeItem("password");
+                console.log(response);
+                responseObj = JSON.parse(response);
+                if (responseObj.success) {
+                    location.reload('/');
+                }
+                else {
+                    alert('something went wrong');
+                }
+            });
+        });
+
+        $(document).ready(function () {
+            $.ajax({
+                headers: { "x-csrf-token": "<%= locals.csrfToken %>" },
+                url: '/website/report/inactive_patients/count',
+                type: 'POST'
+            }).done(function (response) {
+                if (response.success) {
+                    var count = response.inactive_patients_count;
+                    if (count) {
+                        $("#badge").css('display', '');
+                        $("#badge").html(count);
+                    }
+                }
+            });
+        });
+    </script>

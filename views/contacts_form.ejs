@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>UTSW TBI Care</title>
+    <meta charset="utf-8">
+    <%- include('partials/header.ejs') %>
+    <script src="/public/js/authentication.js"></script>
+    </head>
+
+<body>
+<%- include('partials/nav_dashboard.ejs') %>
+<%- include('partials/sidebar.ejs') %>
+<%- include('partials/formFormatStart.ejs') %>
+
+<h1 class="font-family: 'Merriweather', serif;
+text-center"><%= title %></h1>
+<hr>
+
+<!-- form start here -->
+<form action="/website/contacts/form" method="POST" onsubmit="return check()">
+    <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>" />
+    <input type="hidden" name="contact_id" value="<%= locals.contact ? locals.contact.id : -1 %>">
+    <div class="form-group row ">
+        <label for="type"  class="col-md-3 col-3 col-form-label text-right pr-3 ">Type</label>
+        <select id = "type" name="type" type="text" class="form-control col-6 " placeholder="Type" required>
+            <% if(!locals.contact) {%>
+                <option value="" disabled selected>Select Care Team Type</option>
+                <% } %>
+                <% for(var i = 0; i < locals.contact_types.length; ++i) { %>
+                <option value="<%= locals.contact_types[i].id %>" <%= locals.contact && locals.contact.type == locals.contact_types[i].id
+                    ? 'selected' : '' %>>
+                    <%= locals.contact_types[i].english %>
+                </option>,m                              
+                <% } %>
+        </select>
+        <!-- <a href="/careTeam/addCareTeamType" class="btn btn-primary mb-2 ml-3 form-control col-2" type="button"><span class="fas fa-plus fa-xs mr-2"></span>Add Type</a> -->
+    </div>
+    <div class="form-group row">
+        <label for="name"  class="col-3 col-form-label text-right pr-3">Name</label>
+        <input id= "name" name="name" type="text" class="form-control col-6" placeholder="Name" value="<%= locals.contact ? locals.contact.name : '' %>" required>
+    </div>
+    <div class="form-group row">
+        <label for="relation"  class="col-3 col-form-label text-right pr-3">Relation</label>
+        <input name="relation"  type="text" class="form-control col-6" id="relation" placeholder="Relation" value="<%= locals.contact ? locals.contact.relation : '' %>" required>
+    </div>      
+    <div class="form-group row">
+        <label class="col-3 col-form-label text-right pr-3">Contact Items</label>
+        <% var cur_contact_items = locals.contact ? locals.contact.contact_items.split(",") : [] %>
+        <select style="height: 200px !important;" name="contact_items" id="contact_items" class="form-control col-6" required multiple>
+            <% for(var i = 0; i < locals.contact_items.length; ++i) { %>
+            <option value="<%= locals.contact_items[i].id %>"
+                <%= cur_contact_items.indexOf(locals.contact_items[i].id + '') != -1 ? 'selected' : '' %>>
+                <%= locals.contact_items[i].type %> | <%= locals.contact_items[i].value %>
+            </option>
+            <% } %>
+        </select>
+    </div>
+    <div class="form-group row">
+        <label for="color" class="col-3 col-form-label text-right">Color</label>
+        <input name="color" id="color" type="color" class="form-control col-6" placeholder="Color" value="<%= locals.contact ? locals.contact.color : '' %>" >
+    </div>
+    <div class="form-group row">
+        <label for="image_url" class="col-3 col-form-label text-right" >Image URL</label>
+        <input name="image_url" type="text" class="form-control col-8" placeholder="Image URL" value="<%= locals.contact ? locals.contact.image_url : '' %>" >
+    </div>
+    <button  name="submit" id="submit"
+            type="submit" class="btn btn-primary btn-block" ><%= locals.contact ? 'Save' : 'Submit' %></button>
+            <br>
+</form>
+<!-- form end here -->
+
+<!-- close sidebar -->
+<script>
+    $(".remove_empty_option").on('change', function () {
+    if ($(this).find("option:first-child").val() == 'empty') {
+    $(this).find('option').get(0).remove();
+    }
+    });
+</script>
+
+<%- include('partials/footer.ejs') %>
+
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>UTSW TBI Care</title>
+    <meta charset="utf-8">
+    <%- include('partials/header.ejs') %>
+    <script src="/public/js/authentication.js"></script>
+    <script src="/public/js/register/register.js"></script>
+    <script src="/public/js/register/strophe.register.js"></script>
+    <script src="/public/js/register/amazon-cognito-auth.min.js"></script>
+    <script src="/public/js/register/amazon-cognito-identity.min.js"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.7.16.min.js"></script>
+    <script src="/models/cognito-config.js"></script>
+    <script src="/public/js/authentication.js"></script>
+    </head>
+<body>
+
+<%- include('partials/nav_dashboard.ejs') %>
+<%- include('partials/sidebar.ejs') %>
+<%- include('partials/formFormatStart.ejs') %>
+
+
+<h1 class="font-family: 'Merriweather', serif;
+text-center"><%= title %></h1>
+<hr>
+
+<form action="/website/admins/form" id="registerForm" method="POST" >
+    <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>" />
+    <input type="hidden" name="admin_id" value="<%= locals.admin ? locals.admin.id : -1 %>">
+
+
+    <div class="form-group row">
+        <label for="name"  class="col-3 col-form-label text-right pr-3">Username</label>
+        <% if(locals.admin) { %>
+            <label><%= locals.admin.username %></label>
+            <% } else { %>
+        <input name="username" id="username" type="text" class="form-control col-6" placeholder="Username" required>
+        <% } %>
+    </div>
+    
+    <div class="form-group row">
+        <% if(!locals.admin || locals.logged_admin.role == 1 || locals.admin.id == locals.logged_admin.id) { %>
+            <label class="col-3 col-form-label text-right pr-3">Password</label>
+            <input name="password" id="password" type="password" class="form-control col-6" placeholder="Password" <%= !locals.admin ? 'required' : '' %>>
+        <% } %>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-3 col-form-label text-right pr-3">Name</label>
+        <input name="name" id="name" type="text" class="form-control col-6" placeholder="Name" value="<%= locals.admin ? locals.admin.name : '' %>" required>
+    </div>
+
+    <div class="form-group row">
+        <label class="col-3 col-form-label text-right pr-3">Email</label>
+        <input name="email" id="email" type="text" class="form-control col-6" placeholder="Email" value="<%= locals.admin ? locals.admin.email : '' %>" required>
+    </div>
+
+    <div class="form-group row">
+    <% if(!locals.admin || locals.logged_admin.role == 1) { %>
+        <label class="col-3 col-form-label text-right pr-3">Role</label>
+            <select name="role" id="role" class="form-control col-6">
+                <% if(!locals.admin) {%>
+                <option value="empty"></option>
+                <% } %>
+                <option value="0" <%= locals.admin && locals.admin.role == '0' ? 'selected' : '' %>>
+                    No role
+                </option>
+                <% for(var i = 0; i < roles.length; ++i) { %>
+                <option value="<%= roles[i].id %>"
+                    <%= locals.admin && locals.admin.role == roles[i].id ? 'selected' : '' %>>
+                    <%= roles[i].name %></option>
+                <% } %>
+            </select>
+    </div>
+    <% } %>
+    <div class="form-group row">
+    <% if(locals.logged_admin.role == 1) { %>
+        <label class="col-md-2 col-xs-3 text-right"></label>
+        <div class="col-md-4 col-xs-9 text-left">
+            <label for="disable">
+                <input type="checkbox" name="disable" id="disable" value="0"
+                    <%= locals.admin && !locals.admin.enabled ? 'checked' : '' %> />
+                Disable login
+            </label>
+        </div>
+    </div>
+    <% } %>
+        <!-- <input name="submit" id="submit" type="submit" value="<%= locals.contacts_info ? 'Save' : 'Submit' %>"
+        class="btn btn-primary btn-block" required> -->
+        <input type="button" class="btn btn-primary btn-block" value="<%= locals.contacts_info ? 'Save' : 'Submit' %>" onclick="register()"/>
+        <br>
+</form>
+
+
+
+<script>
+    $(".remove_empty_option").on('change', function () {
+        if ($(this).find("option:first-child").val() == 'empty') {
+            $(this).find('option').get(0).remove();
+        }
+    });
+</script>
+
+<script>
+    function check() {
+        var role = document.getElementById('role').value;
+        if (role == 'empty') {
+            alert('You missed mandatory fields');
+            return false;
+        }
+        return true;
+    }
+</script>
+
+<%- include('partials/footer.ejs') %>
+
+</body>
+</html>

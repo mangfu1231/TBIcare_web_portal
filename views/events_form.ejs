@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    <title>UTSW TBI Care</title>
+    <meta charset="utf-8">
+    <%- include('partials/header.ejs') %>
+    <script src="/public/js/authentication.js"></script>
+    </head>
+
+<body>
+<%- include('partials/nav_dashboard.ejs') %>
+<%- include('partials/sidebar.ejs') %>
+<%- include('partials/formFormatStart.ejs') %>
+
+<h1 class="font-family: 'Merriweather', serif;
+text-center"><%= title %></h1>
+<hr>
+
+        <form action="/website/events/form" method="POST" onsubmit="return check()">
+            <input type="hidden" name="_csrf" value="<%= locals.csrfToken %>" />
+            <input type="hidden" name="event_id" value="<%= locals.event ? locals.event.id : -1 %>">
+            <div class="form-group row">
+                <label class="col-3 col-form-label text-right pr-3">Event ID</label>
+                <label for="" class="col-3 col-form-label" style="padding-left: 2px;"><%= locals.event.id %></label>
+            </div>
+            <div class="form-group row">
+                <label class="col-3 col-form-label text-right pr-3">Activity</label>
+                <select name="activity_id" id="activity_id" class="form-control col-6">
+                    <% if(!locals.event) {%>
+                    <option value="empty"></option>
+                    <% } %>
+                    <% for(var i = 0; i < activities.length; ++i) { %>
+                    <option value="<%= activities[i].id %>"
+                        <%= locals.event && locals.event.activity_id == activities[i].id ? 'selected' : '' %>>
+                        <%= activities[i].id %> | <%= activities[i].title %>
+                    </option> <% } %>
+                </select>
+            </div>
+            <div class="form-group row">
+                <label class="col-3 col-form-label text-right pr-3">Number of Days Since Start</label>
+                <input name="number_of_days_since_start" id="number_of_days_since_start" type="text"
+                    class="form-control col-6" placeholder="Number of Days Since Start"
+                    value="<%= locals.event ? locals.event.number_of_days_since_start : '' %>" required>
+            </div>
+            <div class="form-group row">
+                <label class="col-3 col-form-label text-right pr-3">Occurrence Index of Day</label>
+                <input name="occurrence_index_of_day" id="occurrence_index_of_day" type="text" class="form-control col-6"
+                    placeholder="Occurrence Index of Day"
+                    value="<%= locals.event ? locals.event.occurrence_index_of_day : '' %>" required>
+            </div>
+            <div class="form-group row">
+                <label class="col-3 col-form-label text-right pr-3">State</label>
+                <select name="state" id="state" class="form-control col-6">
+                    <% if(!locals.event) {%>
+                    <option value="empty"></option>
+                    <% } %>
+                    <option value="0" <%= locals.event && locals.event.state == '0' ? 'selected' : '' %>>
+                        0
+                    </option>
+                    <option value="1" <%= locals.event && locals.event.state == '1' ? 'selected' : '' %>>
+                        1
+                    </option>
+                    <option value="2" <%= locals.event && locals.event.state == '2' ? 'selected' : '' %>>
+                        2
+                    </option>
+                </select>
+            </div>
+            <div class="col-md-offset-5 form-group col-xs-12">
+                <input name="submit" id="submit" type="submit" value="<%= locals.event ? 'Save' : 'Submit' %>"
+                    class="btn btn-primary btn-block" required>
+            </div>
+        </form>
+    </div>
+</div>
+
+<% include ./styles_import %>
+
+<script>
+    $(".remove_empty_option").on('change', function () {
+        if ($(this).find("option:first-child").val() == 'empty') {
+            $(this).find('option').get(0).remove();
+        }
+    });
+</script>
+
+<script>
+    function check() {
+        var type = document.getElementById('type').value;
+        if (type == 'empty') {
+            alert('You missed mandatory fields');
+            return false;
+        }
+        var event_item = document.getElementById('event_item').value;
+        if (event_item == 'empty') {
+            alert('You missed mandatory fields');
+            return false;
+        }
+        return true;
+    }
+</script>
