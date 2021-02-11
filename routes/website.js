@@ -692,6 +692,20 @@ router.post('/patients/delete', async function (req, res, next) {
   }
 });
 
+router.post('/patients/recover', async function (req, res, next) {
+  try {
+    var patient_id = req.body.patient_id;
+    var result = await pool.query("UPDATE patient set is_deleted = 0 WHERE id = ?", patient_id);
+    res.status(200).json({
+      success: true,
+      result: result
+    });
+  }
+  catch (error) {
+    res.status(500).json({ success: false, error: error.sqlMessage ? error.sqlMessage : "Unknown error. Please contact admin" });
+  }
+});
+
 router.get('/charts/patient', async function (req, res, next) {
   try {
     var patient_id = req.query.patient_id ? req.query.patient_id : -1;
