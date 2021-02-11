@@ -30,12 +30,40 @@
  text-center">View Prescription</h1>
 <hr>
 
+<!-- Active Archive Selection Function -->
+<div id="div_filter" class="jumbotron" style="padding:20px 5px 60px 5px; height:75px">
+  <form action="/website/activities" method="GET">
+    <div class="row">
+
+      <label class="col-md-2 col-xs-12" style='margin-right: -6%; margin-top:9px; margin-left:3px;'><b>Prescription Status: </b></label>
+
+      <div class="form-group col-md-3 col-xs-12" style='margin-right: -10%;'>
+        <div class="col-md-7 col-xs-12" >
+          <select name="deleted" id="deleted" class="form-control">
+            <option value="0" <%= locals.deleted && locals.deleted == 0 ? 'selected' : '' %>>
+              Active
+            </option>
+            <option value="1" <%= locals.deleted && locals.deleted == 1 ? 'selected' : '' %>>
+              Archived
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group col-md-1 col-xs-12" >
+        <input type="submit" name="filter" id="filter" value="Confirm" class="col-md-12 col-xs-12 btn btn-primary">
+      </div>
+
+    </div>
+  </form>
+</div>
+
 <!-- form start here -->
 <div class="table-responsive" style="zoom:70%">
 
 <table 
     id="table"
-    style="position: relative; width:100%"
+    style="position: relative; width:99%"
     class="table table-striped"
     data-toggle="table"
     data-pagination="true"
@@ -64,6 +92,7 @@
             <th style="width: 3%" data-field="ID">ID</th>
             <th data-field="Patient" data-sortable = "true">Patient</th>
             <th data-field="Start Date" data-sortable = "true">Start Date</th>
+            <th data-field="End Date" data-sortable = "true">End Date</th>
             <th data-field="Title" data-sortable = "true">Title</th>
             <th data-field="Text" data-sortable = "true">Text</th>
             <th  data-field="Instructions" >Instructions</th>
@@ -72,10 +101,10 @@
             <th data-field="Target Steps" data-sortable = "true">Target Steps</th>
             <th class="col-sm-3" data-field="Target Distance" data-sortable = "true">Target Distance</th>
             <th data-field="Target Time" data-sortable = "true">Target Time</th>
-            <th data-field="Target Active Burned Energy" data-sortable = "true">Target Active Burned Energy</th>
+            <th data-field="Target Active Burned Energy" data-sortable = "true">Target Burned Energy</th>
             <th data-field="Summary" data-sortable = "true">Summary</th>
             <th data-field="Created At" data-sortable = "true">Created At</th>
-            <th data-field="delete">Delete</th>
+            <th data-field="delete"><%= locals.deleted && locals.deleted == 1 ? 'Recover' : 'Archive' %></th>
         </tr>
     </thead>
     <tbody>
@@ -87,6 +116,7 @@
         <td>ID</td>
         <td>Patient</td>
         <td>Start Date</td>
+        <td>End Date</td>
         <td>Title</td>
         <td>Text</td>
         <td>Instructions</td>
@@ -95,10 +125,10 @@
         <td>Target Steps</td>
         <td>Target Distance</td>
         <td>Target Time</td>
-        <td>Target Active Burned Energy</td>
+        <td>Target Burned Energy</td>
         <td>Summary</td>
         <td>Created At</td>
-        <td>Delete</td>
+        <td><%= locals.deleted && locals.deleted == 1 ? 'Recover' : 'Archive' %></td>
       </tr>
     </tfoot>
 </table>
@@ -113,6 +143,7 @@
 </script>
 <% for (var i = 0; i < activities.length; ++i) { %>
     <script>
+        var remove = '<%= locals.deleted %>';
         var obj = {};
         obj["ID"] = '<%= activities[i].id %>';
         obj["Patient"] = '<%= activities[i].patient_name %>';
@@ -139,15 +170,24 @@
         obj["Target Heart Rate"] = '<%= activities[i].target_heart_rate %>';
         obj["Target Steps"] = '<%= activities[i].target_steps %>';
         obj["Target Distance"] = '<%= activities[i].target_distance %>';
-        obj["Target Time"] = '<%= activities[i].target_time/60 %>';
+        obj["Target Time"] = '<%= Math.round(((activities[i].target_time)/60) * 10) / 10 %>';
         obj["Target Active Burned Energy"] = '<%= activities[i].target_active_burned_energy %>';
         obj["Summary"] = '<%= activities[i].summary %>';
         obj["Created At"] = '<%= activities[i].created_at %>';
+
+        if (remove == '1') {
         obj["delete"] = 
-        `<button class="mybutton" title="Delete" onclick="delete_activity(<%= activities[i].id %>)">
+        `<button class="mybutton" title="Delete" onclick="recover_activity(<%= activities[i].id %>)">
+          <i class="fas fa-redo" style="color: #118f03;"></i>
+         </button>`;
+        } else {
+        obj["delete"] = 
+         `<button class="mybutton" title="Delete" onclick="delete_activity(<%= activities[i].id %>)">
           <i class="fas fa-trash-alt" style="color: #ab150a;"></i>
          </button>`;
-        obj["edit"] = '<a title="Edit"  href="/website/activities/form?activity_id=<%= activities[i].id %>"><i class="fas fa-edit"></i></a>';
+        };
+        
+         obj["edit"] = '<a title="Edit"  href="/website/activities/form?activity_id=<%= activities[i].id %>"><i class="fas fa-edit"></i></a>';
         data.push(obj);
     </script>
 <% } %>
@@ -178,7 +218,7 @@ function detailFormatter(index, row) {
   function delete_activity(activity_id) {
     Swal.fire({
         title: 'Are you sure?',
-        text: "You won't be able to revert this!",
+        
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -215,6 +255,50 @@ function detailFormatter(index, row) {
     })
   }
 </script>
+
+<!-- DELETE DATA -->
+<script>
+  function recover_activity(activity_id) {
+    Swal.fire({
+        title: 'Are you sure?',
+        
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, recover it!'
+      }).then((result) => {
+        if (result.value) {
+          Swal.fire(
+            'Deleted!',
+            'Your file has been recovered.',
+            'success'
+          ).then(function () {
+            $("#div_spinner_" + activity_id).css('display', '');
+            $("#div_edit_" + activity_id).css('display', 'none');
+            $.ajax({
+                headers:{"x-csrf-token": "<%= locals.csrfToken %>" },
+                url: '/website/activities/recover',
+                type: 'POST',
+                dataType: 'text',
+                data: { activity_id: activity_id }
+            }).done(function (response) {
+                console.log(response);
+                location.reload();
+            }).fail(function (jqXHR, statusText, errorThrown) {
+                console.log('error');
+                var data = JSON.parse(jqXHR.responseText);
+                console.log(data);
+                $("#div_spinner_" + activity_id).css('display', 'none');
+                $("#div_edit_" + activity_id).css('display', '');
+                alert(data.error);
+            });
+        });
+      }
+    })
+  }
+</script>
+
 
 <% include('partials/tableFormatEnd.ejs') %>
 

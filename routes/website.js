@@ -183,14 +183,25 @@ router.get('/report/patient_inactivity', async function (req, res, next) {
 // Activity (Prescription)
 router.get('/activities', async function (req, res, next) {
   try {
+
+    var deleted = req.query.deleted;
+
     var patient_id = req.query.patient_id ? req.query.patient_id : 'all';
     var type = req.query.type ? req.query.type : 'all';
     var workout_type = req.query.workout_type ? req.query.workout_type : 'all';
     var location_type = req.query.location_type ? req.query.location_type : 'all';
     var start_date = req.query.start_date ? req.query.start_date : '';
     var created_at = req.query.created_at ? req.query.created_at : '';
-    var conditions = ` WHERE 1 AND a.is_deleted = 0 `;
+
+    var conditions = ` WHERE 1 AND a.is_deleted = ? `;
+
     var parameters = [];
+
+    if (deleted) {
+      parameters.push(deleted);
+    } else {
+      parameters.push(0)
+    }
     if (patient_id != 'all') {
       conditions += ` AND a.patient_id = ? `;
       parameters.push(patient_id);
@@ -248,7 +259,8 @@ router.get('/activities', async function (req, res, next) {
       workout_type: workout_type,
       location_type: location_type,
       start_date: start_date,
-      created_at: created_at
+      created_at: created_at,
+      deleted: deleted
     });
   }
   catch (error) {
@@ -367,6 +379,20 @@ router.post('/activities/delete', async function (req, res, next) {
   try {
     var activity_id = req.body.activity_id;
     var result = await pool.query("UPDATE activity set is_deleted = 1 WHERE id = ?", activity_id);
+    res.status(200).json({
+      success: true,
+      result: result
+    });
+  }
+  catch (error) {
+    res.status(500).json({ success: false, error: error.sqlMessage ? error.sqlMessage : "Unknown error. Please contact admin" });
+  }
+});
+
+router.post('/activities/recover', async function (req, res, next) {
+  try {
+    var activity_id = req.body.activity_id;
+    var result = await pool.query("UPDATE activity set is_deleted = 0 WHERE id = ?", activity_id);
     res.status(200).json({
       success: true,
       result: result
@@ -1393,7 +1419,7 @@ router.get('/attempts', async function (req, res, next) {
     var patient_id = req.query.patient_id ? req.query.patient_id : 'all';
     var activity_id = req.query.activity_id ? req.query.activity_id : 'all';
     var event_id = req.query.event_id ? req.query.event_id : 'all';
-    var conditions = ` WHERE 1 AND c.is_deleted = 0 `;
+    var conditions = ` WHERE 1 `;
     var parameters = [];
     if (patient_id != 'all') {
       conditions += ` AND c.patient_id = ? `;

@@ -30,7 +30,7 @@
  text-center">View Patients</h1>
 <hr>
 
-<!-- Archive function -->
+<!-- Active Archive Selection Function -->
 <div id="div_filter" class="jumbotron" style="padding:20px 5px 60px 5px; height:75px">
   <form action="/website/patients" method="GET">
     <div class="row">
@@ -65,7 +65,7 @@
 
 <table 
     id="table"
-    style="position: relative; width:100%"
+    style="position: relative; width:99%"
     class="table table-striped"
     data-toggle="table"
     data-pagination="true"
@@ -104,7 +104,7 @@
             <th data-field="delete"><%= locals.deleted && locals.deleted == 1 ? 'Recover' : 'Archive' %></th>
         </tr>
     </thead>
-    <tfoot >
+    <tfoot>
       <tr>
         <td>Edit</td>
         <td>Name</td>
