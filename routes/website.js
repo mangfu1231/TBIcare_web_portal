@@ -1419,7 +1419,7 @@ router.get('/attempts', async function (req, res, next) {
     var patient_id = req.query.patient_id ? req.query.patient_id : 'all';
     var activity_id = req.query.activity_id ? req.query.activity_id : 'all';
     var event_id = req.query.event_id ? req.query.event_id : 'all';
-    var conditions = ` WHERE 1 `;
+    var conditions = ` WHERE 1 AND c.is_deleted = 0 AND d.is_deleted = 0`;
     var parameters = [];
     if (patient_id != 'all') {
       conditions += ` AND c.patient_id = ? `;
